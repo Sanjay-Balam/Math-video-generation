@@ -1,0 +1,502 @@
+2025-06-08 20:13:46,508 - app.main - INFO - 🚀 Starting Video Generation Service...
+2025-06-08 20:13:56,518 - app.services.health - ERROR - Manim check failed: Command '['manim', '--version']' timed out after 10 seconds
+2025-06-08 20:13:56,545 - app.services.health - INFO - Dependency check results: {'manim': False, 'python': True, 'ffmpeg': True}
+2025-06-08 20:14:06,989 - app.core.exceptions - ERROR - HTTP error: Not Found
+2025-06-08 20:14:13,009 - app.main - INFO - 🔄 Shutting down Video Generation Service...
+2025-06-08 20:52:45,470 - app.main - INFO - 🚀 Starting Video Generation Service...
+2025-06-08 20:52:55,481 - app.services.health - ERROR - Manim check failed: Command '['manim', '--version']' timed out after 10 seconds
+2025-06-08 20:52:55,497 - app.services.health - INFO - Dependency check results: {'manim': False, 'python': True, 'ffmpeg': True}
+2025-06-08 20:53:08,343 - app.main - INFO - 🔄 Shutting down Video Generation Service...
+2025-06-09 14:09:05,256 - app.main - INFO - 🚀 Starting Video Generation Service...
+2025-06-09 14:09:07,952 - app.services.health - INFO - Dependency check results: {'manim': True, 'python': True, 'ffmpeg': True}
+2025-06-09 14:18:32,268 - app.main - INFO - 🔄 Shutting down Video Generation Service...
+2025-06-09 14:18:38,319 - app.main - INFO - 🚀 Starting Video Generation Service...
+2025-06-09 14:18:39,352 - app.services.health - INFO - Dependency check results: {'manim': True, 'python': True, 'ffmpeg': True}
+2025-06-09 14:18:59,173 - app.services.manim_compiler - INFO - Executing command: manim -qm temp/visualize_the_pythagorean_theo_2025-06-09T08-48-59_99f7e924-b137-43db-adc7-582b6a9b2b2c.py
+2025-06-09 14:19:00,507 - app.services.manim_compiler - ERROR - Compilation failed for job 99f7e924-b137-43db-adc7-582b6a9b2b2c: Manim compilation failed: Traceback (most recent call last):
+  File "/Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/bin/manim", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/site-packages/click/core.py", line 1442, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/site-packages/click/core.py", line 1363, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/site-packages/click/core.py", line 1830, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/site-packages/click/core.py", line 1226, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/site-packages/click/core.py", line 794, in invoke
+    return callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/site-packages/manim/cli/render/commands.py", line 116, in render
+    for SceneClass in scene_classes_from_file(file):
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/site-packages/manim/utils/module_ops.py", line 131, in scene_classes_from_file
+    module = get_module(file_path)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/site-packages/manim/utils/module_ops.py", line 57, in get_module
+    raise FileNotFoundError(f"{file_name} not found")
+FileNotFoundError: /Users/balamsanjay/Desktop/SAAS/video-generation-service/temp/temp/visualize_the_pythagorean_theo_2025-06-09T08-48-59_99f7e924-b137-43db-adc7-582b6a9b2b2c.py not found
+
+2025-06-09 14:22:14,085 - app.main - INFO - 🔄 Shutting down Video Generation Service...
+2025-06-09 14:22:18,761 - app.main - INFO - 🚀 Starting Video Generation Service...
+2025-06-09 14:22:20,062 - app.services.health - INFO - Dependency check results: {'manim': True, 'python': True, 'ffmpeg': True}
+2025-06-09 14:23:06,837 - app.services.manim_compiler - INFO - Executing command: manim -qm visualize_the_pythagorean_theo_2025-06-09T08-53-06_019e0a42-d8f8-40f5-b793-fd12af35f307.py
+2025-06-09 14:23:23,240 - app.services.manim_compiler - INFO - Successfully compiled script visualize_the_pythagorean_theo_2025-06-09T08-53-06 with job_id 019e0a42-d8f8-40f5-b793-fd12af35f307
+2025-06-09 14:25:59,410 - app.services.manim_compiler - INFO - Executing command: manim -qm visualize_the_quadratic_formul_2025-06-09T08-55-59_3a557b3f-c610-4df8-bda3-de527bdbe4bc.py
+2025-06-09 14:26:18,584 - app.services.manim_compiler - ERROR - Compilation failed for job 3a557b3f-c610-4df8-bda3-de527bdbe4bc: Manim compilation failed: Animation 0: Write(Text('The Quadratic Formula')):   0%|          | 0/60 [00:00<?, ?it/s]Animation 0: Write(Text('The Quadratic Formula')):   2%|▏         | 1/60 [00:00<00:06,  8.78it/s]Animation 0: Write(Text('The Quadratic Formula')):  27%|██▋       | 16/60 [00:00<00:00, 85.13it/s]Animation 0: Write(Text('The Quadratic Formula')):  52%|█████▏    | 31/60 [00:00<00:00, 112.22it/s]Animation 0: Write(Text('The Quadratic Formula')):  77%|███████▋  | 46/60 [00:00<00:00, 125.97it/s]Animation 0: Write(Text('The Quadratic Formula')):  98%|█████████▊| 59/60 [00:00<00:00, 125.48it/s]                                                                                                   Animation 2: Transform(Text('The Quadratic Formula')):   0%|          | 0/30 [00:00<?, ?it/s]Animation 2: Transform(Text('The Quadratic Formula')):   7%|▋         | 2/30 [00:00<00:01, 15.66it/s]Animation 2: Transform(Text('The Quadratic Formula')):  13%|█▎        | 4/30 [00:00<00:01, 15.76it/s]Animation 2: Transform(Text('The Quadratic Formula')):  20%|██        | 6/30 [00:00<00:01, 15.94it/s]Animation 2: Transform(Text('The Quadratic Formula')):  27%|██▋       | 8/30 [00:00<00:01, 16.27it/s]Animation 2: Transform(Text('The Quadratic Formula')):  33%|███▎      | 10/30 [00:00<00:01, 16.43it/s]Animation 2: Transform(Text('The Quadratic Formula')):  40%|████      | 12/30 [00:00<00:01, 15.75it/s]Animation 2: Transform(Text('The Quadratic Formula')):  47%|████▋     | 14/30 [00:00<00:01, 15.61it/s]Animation 2: Transform(Text('The Quadratic Formula')):  53%|█████▎    | 16/30 [00:01<00:00, 15.91it/s]Animation 2: Transform(Text('The Quadratic Formula')):  60%|██████    | 18/30 [00:01<00:00, 16.08it/s]Animation 2: Transform(Text('The Quadratic Formula')):  67%|██████▋   | 20/30 [00:01<00:00, 16.23it/s]Animation 2: Transform(Text('The Quadratic Formula')):  73%|███████▎  | 22/30 [00:01<00:00, 16.34it/s]Animation 2: Transform(Text('The Quadratic Formula')):  80%|████████  | 24/30 [00:01<00:00, 16.14it/s]Animation 2: Transform(Text('The Quadratic Formula')):  87%|████████▋ | 26/30 [00:01<00:00, 16.20it/s]Animation 2: Transform(Text('The Quadratic Formula')):  93%|█████████▎| 28/30 [00:01<00:00, 10.24it/s]Animation 2: Transform(Text('The Quadratic Formula')): 100%|██████████| 30/30 [00:02<00:00, 11.59it/s]                                                                                                      Animation 4: Write(MathTex('ax^2 + bx + c = 0')):   0%|          | 0/30 [00:00<?, ?it/s]Animation 4: Write(MathTex('ax^2 + bx + c = 0')):  43%|████▎     | 13/30 [00:00<00:00, 128.52it/s]                                                                                                  Animation 6: FadeIn(MathTex('a')), etc.:   0%|          | 0/30 [00:00<?, ?it/s]Animation 6: FadeIn(MathTex('a')), etc.:  93%|█████████▎| 28/30 [00:00<00:00, 261.86it/s]                                                                                         ╭────────────────────── Traceback (most recent call last) ───────────────────────╮
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/cli/render/commands.py:120 in render                        │
+│                                                                                │
+│   117 │   │   │   try:                                                         │
+│   118 │   │   │   │   with tempconfig({}):                                     │
+│   119 │   │   │   │   │   scene = SceneClass()                                 │
+│ ❱ 120 │   │   │   │   │   scene.render()                                       │
+│   121 │   │   │   except Exception:                                            │
+│   122 │   │   │   │   error_console.print_exception()                          │
+│   123 │   │   │   │   sys.exit(1)                                              │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/scene/scene.py:229 in render                                │
+│                                                                                │
+│    226 │   │   """                                                             │
+│    227 │   │   self.setup()                                                    │
+│    228 │   │   try:                                                            │
+│ ❱  229 │   │   │   self.construct()                                            │
+│    230 │   │   except EndSceneEarlyException:                                  │
+│    231 │   │   │   pass                                                        │
+│    232 │   │   except RerunSceneException as e:                                │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/temp/visualize_the_qu │
+│ adratic_formul_2025-06-09T08-55-59_3a557b3f-c610-4df8-bda3-de527bdbe4bc.py:54  │
+│ in construct                                                                   │
+│                                                                                │
+│    51 │   │                                                                    │
+│    52 │   │   # Arrows pointing to the terms in the quadratic equation         │
+│    53 │   │   a_arrow = Arrow(a_term.get_bottom(), quadratic_equation[0], buff │
+│ ❱  54 │   │   b_arrow = Arrow(b_term.get_bottom(), quadratic_equation[2], buff │
+│    55 │   │   c_arrow = Arrow(c_term.get_bottom(), quadratic_equation[4], buff │
+│    56 │   │                                                                    │
+│    57 │   │   self.play(                                                       │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/mobject/mobject.py:2244 in __getitem__                      │
+│                                                                                │
+│   2241 │   │   if isinstance(value, slice):                                    │
+│   2242 │   │   │   GroupClass = self.get_group_class()                         │
+│   2243 │   │   │   return GroupClass(*self_list.__getitem__(value))            │
+│ ❱ 2244 │   │   return self_list.__getitem__(value)                             │
+│   2245 │                                                                       │
+│   2246 │   def __iter__(self):                                                 │
+│   2247 │   │   return iter(self.split())                                       │
+╰────────────────────────────────────────────────────────────────────────────────╯
+IndexError: list index out of range
+
+2025-06-09 14:29:14,400 - app.main - INFO - 🔄 Shutting down Video Generation Service...
+2025-06-09 14:29:19,920 - app.main - INFO - 🚀 Starting Video Generation Service...
+2025-06-09 14:29:21,193 - app.services.health - INFO - Dependency check results: {'manim': True, 'python': True, 'ffmpeg': True}
+2025-06-09 14:30:02,101 - app.services.manim_compiler - INFO - Executing command: manim -qm visualize_the_quadratic_formul_2025-06-09T09-00-02_c792c63b-ded6-4b13-ba09-023ec768b100.py
+2025-06-09 14:30:16,240 - app.services.manim_compiler - ERROR - Compilation failed for job c792c63b-ded6-4b13-ba09-023ec768b100: Manim compilation failed: Animation 0: Write(Text('The Quadratic Formula')):   0%|          | 0/60 [00:00<?, ?it/s]Animation 0: Write(Text('The Quadratic Formula')):   2%|▏         | 1/60 [00:00<00:07,  7.56it/s]Animation 0: Write(Text('The Quadratic Formula')):  23%|██▎       | 14/60 [00:00<00:00, 70.82it/s]Animation 0: Write(Text('The Quadratic Formula')):  50%|█████     | 30/60 [00:00<00:00, 107.38it/s]Animation 0: Write(Text('The Quadratic Formula')):  75%|███████▌  | 45/60 [00:00<00:00, 122.73it/s]Animation 0: Write(Text('The Quadratic Formula')):  97%|█████████▋| 58/60 [00:00<00:00, 121.43it/s]                                                                                                   Animation 2: Transform(Text('The Quadratic Formula')):   0%|          | 0/30 [00:00<?, ?it/s]Animation 2: Transform(Text('The Quadratic Formula')):  23%|██▎       | 7/30 [00:00<00:00, 67.15it/s]Animation 2: Transform(Text('The Quadratic Formula')):  57%|█████▋    | 17/30 [00:00<00:00, 82.33it/s]Animation 2: Transform(Text('The Quadratic Formula')):  93%|█████████▎| 28/30 [00:00<00:00, 94.42it/s]                                                                                                      Animation 4: Write(MathTex('x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}')):   0%|          | 0/60 [00:00<?, ?it/s]Animation 4: Write(MathTex('x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}')):  20%|██        | 12/60 [00:00<00:00, 117.21it/s]Animation 4: Write(MathTex('x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}')):  50%|█████     | 30/60 [00:00<00:00, 149.80it/s]Animation 4: Write(MathTex('x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}')):  83%|████████▎ | 50/60 [00:00<00:00, 167.28it/s]                                                                                                                          ╭────────────────────── Traceback (most recent call last) ───────────────────────╮
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/cli/render/commands.py:120 in render                        │
+│                                                                                │
+│   117 │   │   │   try:                                                         │
+│   118 │   │   │   │   with tempconfig({}):                                     │
+│   119 │   │   │   │   │   scene = SceneClass()                                 │
+│ ❱ 120 │   │   │   │   │   scene.render()                                       │
+│   121 │   │   │   except Exception:                                            │
+│   122 │   │   │   │   error_console.print_exception()                          │
+│   123 │   │   │   │   sys.exit(1)                                              │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/scene/scene.py:229 in render                                │
+│                                                                                │
+│    226 │   │   """                                                             │
+│    227 │   │   self.setup()                                                    │
+│    228 │   │   try:                                                            │
+│ ❱  229 │   │   │   self.construct()                                            │
+│    230 │   │   except EndSceneEarlyException:                                  │
+│    231 │   │   │   pass                                                        │
+│    232 │   │   except RerunSceneException as e:                                │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/temp/visualize_the_qu │
+│ adratic_formul_2025-06-09T09-00-02_c792c63b-ded6-4b13-ba09-023ec768b100.py:39  │
+│ in construct                                                                   │
+│                                                                                │
+│    36 │   │                                                                    │
+│    37 │   │   # Highlight each term and relate it to the equation              │
+│    38 │   │   a_term_eq = MathTex("a", color=YELLOW).move_to(quadratic_eq[0].g │
+│ ❱  39 │   │   a_term_form = MathTex("a", color=YELLOW).move_to(quadratic_formu │
+│    40 │   │   a_term_form2 = MathTex("a", color=YELLOW).move_to(quadratic_form │
+│    41 │   │                                                                    │
+│    42 │   │   b_term_eq = MathTex("b", color=GREEN).move_to(quadratic_eq[3].ge │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/mobject/mobject.py:2244 in __getitem__                      │
+│                                                                                │
+│   2241 │   │   if isinstance(value, slice):                                    │
+│   2242 │   │   │   GroupClass = self.get_group_class()                         │
+│   2243 │   │   │   return GroupClass(*self_list.__getitem__(value))            │
+│ ❱ 2244 │   │   return self_list.__getitem__(value)                             │
+│   2245 │                                                                       │
+│   2246 │   def __iter__(self):                                                 │
+│   2247 │   │   return iter(self.split())                                       │
+╰────────────────────────────────────────────────────────────────────────────────╯
+IndexError: list index out of range
+
+2025-06-09 14:32:46,369 - app.main - INFO - 🔄 Shutting down Video Generation Service...
+2025-06-09 14:32:51,677 - app.main - INFO - 🚀 Starting Video Generation Service...
+2025-06-09 14:32:52,726 - app.services.health - INFO - Dependency check results: {'manim': True, 'python': True, 'ffmpeg': True}
+2025-06-09 14:33:02,772 - app.services.manim_compiler - INFO - Executing command: manim -qm visualize_the_quadratic_formul_2025-06-09T09-03-02_fb24cc45-78dc-49a8-a816-1cbebe3a93ec.py
+2025-06-09 14:33:07,001 - app.services.manim_compiler - ERROR - Compilation failed for job fb24cc45-78dc-49a8-a816-1cbebe3a93ec: Manim compilation failed: Animation 0: Write(Text('The Quadratic Formula')):   0%|          | 0/60 [00:00<?, ?it/s]Animation 0: Write(Text('The Quadratic Formula')):   2%|▏         | 1/60 [00:00<00:06,  8.63it/s]Animation 0: Write(Text('The Quadratic Formula')):  28%|██▊       | 17/60 [00:00<00:00, 89.75it/s]Animation 0: Write(Text('The Quadratic Formula')):  55%|█████▌    | 33/60 [00:00<00:00, 119.78it/s]Animation 0: Write(Text('The Quadratic Formula')):  82%|████████▏ | 49/60 [00:00<00:00, 131.79it/s]                                                                                                   ╭────────────────────── Traceback (most recent call last) ───────────────────────╮
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/cli/render/commands.py:120 in render                        │
+│                                                                                │
+│   117 │   │   │   try:                                                         │
+│   118 │   │   │   │   with tempconfig({}):                                     │
+│   119 │   │   │   │   │   scene = SceneClass()                                 │
+│ ❱ 120 │   │   │   │   │   scene.render()                                       │
+│   121 │   │   │   except Exception:                                            │
+│   122 │   │   │   │   error_console.print_exception()                          │
+│   123 │   │   │   │   sys.exit(1)                                              │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/scene/scene.py:229 in render                                │
+│                                                                                │
+│    226 │   │   """                                                             │
+│    227 │   │   self.setup()                                                    │
+│    228 │   │   try:                                                            │
+│ ❱  229 │   │   │   self.construct()                                            │
+│    230 │   │   except EndSceneEarlyException:                                  │
+│    231 │   │   │   pass                                                        │
+│    232 │   │   except RerunSceneException as e:                                │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/temp/visualize_the_qu │
+│ adratic_formul_2025-06-09T09-03-02_fb24cc45-78dc-49a8-a816-1cbebe3a93ec.py:26  │
+│ in construct                                                                   │
+│                                                                                │
+│    23 │   │                                                                    │
+│    24 │   │   # Define the quadratic formula as separate MathTex objects       │
+│    25 │   │   x = MathTex("x", "=")                                            │
+│ ❱  26 │   │   neg_b = MathTex(r"\frac{-b")                                     │
+│    27 │   │   pm = MathTex(r"\pm")                                             │
+│    28 │   │   sqrt = MathTex(r"\sqrt{b^2 - 4ac}}")                             │
+│    29 │   │   denominator = MathTex(r"{2a}")                                   │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/mobject/text/tex_mobject.py:293 in __init__                 │
+│                                                                                │
+│   290 │   │   │   │   │   │   """,                                             │
+│   291 │   │   │   │   │   ),                                                   │
+│   292 │   │   │   │   )                                                        │
+│ ❱ 293 │   │   │   raise compilation_error                                      │
+│   294 │   │   self.set_color_by_tex_to_color_map(self.tex_to_color_map)        │
+│   295 │   │                                                                    │
+│   296 │   │   if self.organize_left_to_right:                                  │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/mobject/text/tex_mobject.py:272 in __init__                 │
+│                                                                                │
+│   269 │   │   self.brace_notation_split_occurred = False                       │
+│   270 │   │   self.tex_strings = self._break_up_tex_strings(tex_strings)       │
+│   271 │   │   try:                                                             │
+│ ❱ 272 │   │   │   super().__init__(                                            │
+│   273 │   │   │   │   self.arg_separator.join(self.tex_strings),               │
+│   274 │   │   │   │   tex_environment=self.tex_environment,                    │
+│   275 │   │   │   │   tex_template=self.tex_template,                          │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/mobject/text/tex_mobject.py:81 in __init__                  │
+│                                                                                │
+│    78 │   │                                                                    │
+│    79 │   │   assert isinstance(tex_string, str)                               │
+│    80 │   │   self.tex_string = tex_string                                     │
+│ ❱  81 │   │   file_name = tex_to_svg_file(                                     │
+│    82 │   │   │   self._get_modified_expression(tex_string),                   │
+│    83 │   │   │   environment=self.tex_environment,                            │
+│    84 │   │   │   tex_template=self.tex_template,                              │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/utils/tex_file_writing.py:63 in tex_to_svg_file             │
+│                                                                                │
+│    60 │   if svg_file.exists():                                                │
+│    61 │   │   return svg_file                                                  │
+│    62 │                                                                        │
+│ ❱  63 │   dvi_file = compile_tex(                                              │
+│    64 │   │   tex_file,                                                        │
+│    65 │   │   tex_template.tex_compiler,                                       │
+│    66 │   │   tex_template.output_format,                                      │
+│                                                                                │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/python3.11/s │
+│ ite-packages/manim/utils/tex_file_writing.py:213 in compile_tex                │
+│                                                                                │
+│   210 │   │   if exit_code != 0:                                               │
+│   211 │   │   │   log_file = tex_file.with_suffix(".log")                      │
+│   212 │   │   │   print_all_tex_errors(log_file, tex_compiler, tex_file)       │
+│ ❱ 213 │   │   │   raise ValueError(                                            │
+│   214 │   │   │   │   f"{tex_compiler} error converting to"                    │
+│   215 │   │   │   │   f" {output_format[1:]}. See log output above or"         │
+│   216 │   │   │   │   f" the log file: {log_file}",                            │
+╰────────────────────────────────────────────────────────────────────────────────╯
+ValueError: latex error converting to dvi. See log output above or the log file: 
+media/Tex/1c18696f6922cc1f.log
+
+2025-06-09 14:41:55,964 - app.main - INFO - 🔄 Shutting down Video Generation Service...
+2025-06-09 14:42:00,288 - app.main - INFO - 🚀 Starting Video Generation Service...
+2025-06-09 14:42:01,389 - app.services.health - INFO - Dependency check results: {'manim': True, 'python': True, 'ffmpeg': True}
+2025-06-09 14:42:18,032 - app.services.manim_compiler - INFO - Executing command: manim -qm visualize_the_quadratic_formul_2025-06-09T09-12-18_ef9c573b-c123-4589-9eff-e8f2d237a0aa.py
+2025-06-09 14:42:25,243 - app.services.manim_compiler - ERROR - Compilation failed for job ef9c573b-c123-4589-9eff-e8f2d237a0aa: Manim compilation failed: Animation 0: Write(Text('The Quadratic Formula')):   0%|          | 0/60 [00:00<?, ?it/s]Animation 0: Write(Text('The Quadratic Formula')):   2%|▏         | 1/60 [00:00<00:06,  8.64it/s]Animation 0: Write(Text('The Quadratic Formula')):  28%|██▊       | 17/60 [00:00<00:00, 89.42it/s]Animation 0: Write(Text('The Quadratic Formula')):  55%|█████▌    | 33/60 [00:00<00:00, 116.72it/s]Animation 0: Write(Text('The Quadratic Formula')):  80%|████████  | 48/60 [00:00<00:00, 126.76it/s]                                                                                                   Animation 2: Transform(Text('The Quadratic Formula')):   0%|          | 0/30 [00:00<?, ?it/s]Animation 2: Transform(Text('The Quadratic Formula')):  10%|█         | 3/30 [00:00<00:01, 25.26it/s]Animation 2: Transform(Text('The Quadratic Formula')):  20%|██        | 6/30 [00:00<00:00, 25.40it/s]Animation 2: Transform(Text('The Quadratic Formula')):  30%|███       | 9/30 [00:00<00:00, 25.14it/s]Animation 2: Transform(Text('The Quadratic Formula')):  40%|████      | 12/30 [00:00<00:00, 25.22it/s]Animation 2: Transform(Text('The Quadratic Formula')):  50%|█████     | 15/30 [00:00<00:00, 25.39it/s]Animation 2: Transform(Text('The Quadratic Formula')):  60%|██████    | 18/30 [00:00<00:00, 25.42it/s]Animation 2: Transform(Text('The Quadratic Formula')):  70%|███████   | 21/30 [00:00<00:00, 25.43it/s]Animation 2: Transform(Text('The Quadratic Formula')):  80%|████████  | 24/30 [00:00<00:00, 25.52it/s]Animation 2: Transform(Text('The Quadratic Formula')):  90%|█████████ | 27/30 [00:01<00:00, 25.39it/s]Animation 2: Transform(Text('The Quadratic Formula')): 100%|██████████| 30/30 [00:01<00:00, 25.40it/s]                                                                                                      ╭─────────────────── Traceback (most recent call last) ───────────────────╮
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/pytho │
+│ n3.11/site-packages/manim/cli/render/commands.py:120 in render          │
+│                                                                         │
+│   117 │   │   │   try:                                                  │
+│   118 │   │   │   │   with tempconfig({}):                              │
+│   119 │   │   │   │   │   scene = SceneClass()                          │
+│ ❱ 120 │   │   │   │   │   scene.render()                                │
+│   121 │   │   │   except Exception:                                     │
+│   122 │   │   │   │   error_console.print_exception()                   │
+│   123 │   │   │   │   sys.exit(1)                                       │
+│                                                                         │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/lib/pytho │
+│ n3.11/site-packages/manim/scene/scene.py:229 in render                  │
+│                                                                         │
+│    226 │   │   """                                                      │
+│    227 │   │   self.setup()                                             │
+│    228 │   │   try:                                                     │
+│ ❱  229 │   │   │   self.construct()                                     │
+│    230 │   │   except EndSceneEarlyException:                           │
+│    231 │   │   │   pass                                                 │
+│    232 │   │   except RerunSceneException as e:                         │
+│                                                                         │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/temp/visualize │
+│ _the_quadratic_formul_2025-06-09T09-12-18_ef9c573b-c123-4589-9eff-e8f2d │
+│ 237a0aa.py:35 in construct                                              │
+│                                                                         │
+│   32 │   │   formula.arrange(RIGHT, buff=1)                             │
+│   33 │   │   formula.next_to(equation, DOWN, buff=1)                    │
+│   34 │   │                                                              │
+│ ❱ 35 │   │   self.play(Write(formula_parts.get_left()))                 │
+│   36 │   │   self.play(Write(formula_parts.get_center()))               │
+│   37 │   │   self.wait(2)                                               │
+│   38                                                                    │
+╰─────────────────────────────────────────────────────────────────────────╯
+AttributeError: 'list' object has no attribute 'get_left'
+
+2025-06-09 14:45:07,901 - app.main - INFO - 🔄 Shutting down Video Generation Service...
+2025-06-09 14:45:13,194 - app.main - INFO - 🚀 Starting Video Generation Service...
+2025-06-09 14:45:14,322 - app.services.health - INFO - Dependency check results: {'manim': True, 'python': True, 'ffmpeg': True}
+2025-06-09 14:46:27,573 - app.services.manim_compiler - INFO - Executing command: manim -qm visualize_the_quadratic_formul_2025-06-09T09-16-27_4cf0b22c-0762-4663-a447-61962001b14e.py
+2025-06-09 14:46:34,257 - app.services.manim_compiler - ERROR - Compilation failed for job 4cf0b22c-0762-4663-a447-61962001b14e: Manim compilation failed: Animation 0: Write(Text('The Quadratic Formula')):   0%|          | 0/60 [00:00<?, ?it/s]Animation 0: Write(Text('The Quadratic Formula')):   2%|▏         | 1/60 [00:00<00:07,  7.92it/s]Animation 0: Write(Text('The Quadratic Formula')):  25%|██▌       | 15/60 [00:00<00:00, 76.09it/s]Animation 0: Write(Text('The Quadratic Formula')):  50%|█████     | 30/60 [00:00<00:00, 106.54it/s]Animation 0: Write(Text('The Quadratic Formula')):  75%|███████▌  | 45/60 [00:00<00:00, 121.17it/s]Animation 0: Write(Text('The Quadratic Formula')):  97%|█████████▋| 58/60 [00:00<00:00, 117.39it/s]                                                                                                   Animation 2: Transform(Text('The Quadratic Formula')):   0%|          | 0/30 [00:00<?, ?it/s]Animation 2: Transform(Text('The Quadratic Formula')):  10%|█         | 3/30 [00:00<00:01, 23.91it/s]Animation 2: Transform(Text('The Quadratic Formula')):  20%|██        | 6/30 [00:00<00:00, 24.43it/s]Animation 2: Transform(Text('The Quadratic Formula')):  30%|███       | 9/30 [00:00<00:00, 22.41it/s]Animation 2: Transform(Text('The Quadratic Formula')):  40%|████      | 12/30 [00:00<00:00, 23.21it/s]Animation 2: Transform(Text('The Quadratic Formula')):  50%|█████     | 15/30 [00:00<00:00, 23.49it/s]Animation 2: Transform(Text('The Quadratic Formula')):  60%|██████    | 18/30 [00:00<00:00, 23.73it/s]Animation 2: Transform(Text('The Quadratic Formula')):  70%|███████   | 21/30 [00:00<00:00, 24.13it/s]Animation 2: Transform(Text('The Quadratic Formula')):  80%|████████  | 24/30 [00:01<00:00, 24.49it/s]Animation 2: Transform(Text('The Quadratic Formula')):  90%|█████████ | 27/30 [00:01<00:00, 24.58it/s]Animation 2: Transform(Text('The Quadratic Formula')): 100%|██████████| 30/30 [00:01<00:00, 24.54it/s]                                                                                                      ╭─────────────── Traceback (most recent call last) ───────────────╮
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/cli/render/commands.py:120 in │
+│ render                                                          │
+│                                                                 │
+│   117 │   │   │   try:                                          │
+│   118 │   │   │   │   with tempconfig({}):                      │
+│   119 │   │   │   │   │   scene = SceneClass()                  │
+│ ❱ 120 │   │   │   │   │   scene.render()                        │
+│   121 │   │   │   except Exception:                             │
+│   122 │   │   │   │   error_console.print_exception()           │
+│   123 │   │   │   │   sys.exit(1)                               │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/scene/scene.py:229 in render  │
+│                                                                 │
+│    226 │   │   """                                              │
+│    227 │   │   self.setup()                                     │
+│    228 │   │   try:                                             │
+│ ❱  229 │   │   │   self.construct()                             │
+│    230 │   │   except EndSceneEarlyException:                   │
+│    231 │   │   │   pass                                         │
+│    232 │   │   except RerunSceneException as e:                 │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/temp/v │
+│ isualize_the_quadratic_formul_2025-06-09T09-16-27_4cf0b22c-0762 │
+│ -4663-a447-61962001b14e.py:29 in construct                      │
+│                                                                 │
+│   26 │   │                                                      │
+│   27 │   │   formula_parts = [                                  │
+│   28 │   │   │   MathTex("x ="),                                │
+│ ❱ 29 │   │   │   MathTex("\\frac{-b"),                          │
+│   30 │   │   │   MathTex("\\pm"),                               │
+│   31 │   │   │   MathTex("\\sqrt{b^2 - 4ac}"),                  │
+│   32 │   │   │   MathTex("\\frac{1}{2a}")                       │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/mobject/text/tex_mobject.py:2 │
+│ 93 in __init__                                                  │
+│                                                                 │
+│   290 │   │   │   │   │   │   """,                              │
+│   291 │   │   │   │   │   ),                                    │
+│   292 │   │   │   │   )                                         │
+│ ❱ 293 │   │   │   raise compilation_error                       │
+│   294 │   │   self.set_color_by_tex_to_color_map(self.tex_to_co │
+│   295 │   │                                                     │
+│   296 │   │   if self.organize_left_to_right:                   │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/mobject/text/tex_mobject.py:2 │
+│ 72 in __init__                                                  │
+│                                                                 │
+│   269 │   │   self.brace_notation_split_occurred = False        │
+│   270 │   │   self.tex_strings = self._break_up_tex_strings(tex │
+│   271 │   │   try:                                              │
+│ ❱ 272 │   │   │   super().__init__(                             │
+│   273 │   │   │   │   self.arg_separator.join(self.tex_strings) │
+│   274 │   │   │   │   tex_environment=self.tex_environment,     │
+│   275 │   │   │   │   tex_template=self.tex_template,           │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/mobject/text/tex_mobject.py:8 │
+│ 1 in __init__                                                   │
+│                                                                 │
+│    78 │   │                                                     │
+│    79 │   │   assert isinstance(tex_string, str)                │
+│    80 │   │   self.tex_string = tex_string                      │
+│ ❱  81 │   │   file_name = tex_to_svg_file(                      │
+│    82 │   │   │   self._get_modified_expression(tex_string),    │
+│    83 │   │   │   environment=self.tex_environment,             │
+│    84 │   │   │   tex_template=self.tex_template,               │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/utils/tex_file_writing.py:63  │
+│ in tex_to_svg_file                                              │
+│                                                                 │
+│    60 │   if svg_file.exists():                                 │
+│    61 │   │   return svg_file                                   │
+│    62 │                                                         │
+│ ❱  63 │   dvi_file = compile_tex(                               │
+│    64 │   │   tex_file,                                         │
+│    65 │   │   tex_template.tex_compiler,                        │
+│    66 │   │   tex_template.output_format,                       │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/utils/tex_file_writing.py:213 │
+│  in compile_tex                                                 │
+│                                                                 │
+│   210 │   │   if exit_code != 0:                                │
+│   211 │   │   │   log_file = tex_file.with_suffix(".log")       │
+│   212 │   │   │   print_all_tex_errors(log_file, tex_compiler,  │
+│ ❱ 213 │   │   │   raise ValueError(                             │
+│   214 │   │   │   │   f"{tex_compiler} error converting to"     │
+│   215 │   │   │   │   f" {output_format[1:]}. See log output ab │
+│   216 │   │   │   │   f" the log file: {log_file}",             │
+╰─────────────────────────────────────────────────────────────────╯
+ValueError: latex error converting to dvi. See log output above or 
+the log file: media/Tex/1c18696f6922cc1f.log
+
+2025-06-09 14:47:15,720 - app.main - INFO - 🔄 Shutting down Video Generation Service...
+2025-06-09 14:47:21,878 - app.main - INFO - 🚀 Starting Video Generation Service...
+2025-06-09 14:47:22,909 - app.services.health - INFO - Dependency check results: {'manim': True, 'python': True, 'ffmpeg': True}
+2025-06-09 14:47:27,888 - app.services.manim_compiler - INFO - Executing command: manim -qm visualize_the_distributive_law_2025-06-09T09-17-27_9ffb24ba-cc80-4839-83f5-208807dda5d2.py
+2025-06-09 14:47:39,004 - app.services.manim_compiler - INFO - Successfully compiled script visualize_the_distributive_law_2025-06-09T09-17-27 with job_id 9ffb24ba-cc80-4839-83f5-208807dda5d2
+2025-06-09 14:51:23,269 - app.main - INFO - 🔄 Shutting down Video Generation Service...
+2025-06-09 14:51:27,881 - app.main - INFO - 🚀 Starting Video Generation Service...
+2025-06-09 14:51:28,825 - app.services.health - INFO - Dependency check results: {'manim': True, 'python': True, 'ffmpeg': True}
+2025-06-09 14:51:35,580 - app.services.manim_compiler - INFO - Executing command: manim -qm visualize_the_ellipse_equation_2025-06-09T09-21-35_bfb512ec-062f-4b47-8ae6-52f9ae53d812.py
+2025-06-09 14:51:39,028 - app.services.manim_compiler - ERROR - Compilation failed for job bfb512ec-062f-4b47-8ae6-52f9ae53d812: Manim compilation failed: Animation 0: Write(Text('Ellipse Equation')):   0%|          | 0/60 [00:00<?, ?it/s]Animation 0: Write(Text('Ellipse Equation')):   2%|▏         | 1/60 [00:00<00:07,  7.99it/s]Animation 0: Write(Text('Ellipse Equation')):  28%|██▊       | 17/60 [00:00<00:00, 86.55it/s]Animation 0: Write(Text('Ellipse Equation')):  55%|█████▌    | 33/60 [00:00<00:00, 114.92it/s]Animation 0: Write(Text('Ellipse Equation')):  83%|████████▎ | 50/60 [00:00<00:00, 132.83it/s]                                                                                              ╭─────────────── Traceback (most recent call last) ───────────────╮
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/cli/render/commands.py:120 in │
+│ render                                                          │
+│                                                                 │
+│   117 │   │   │   try:                                          │
+│   118 │   │   │   │   with tempconfig({}):                      │
+│   119 │   │   │   │   │   scene = SceneClass()                  │
+│ ❱ 120 │   │   │   │   │   scene.render()                        │
+│   121 │   │   │   except Exception:                             │
+│   122 │   │   │   │   error_console.print_exception()           │
+│   123 │   │   │   │   sys.exit(1)                               │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/scene/scene.py:229 in render  │
+│                                                                 │
+│    226 │   │   """                                              │
+│    227 │   │   self.setup()                                     │
+│    228 │   │   try:                                             │
+│ ❱  229 │   │   │   self.construct()                             │
+│    230 │   │   except EndSceneEarlyException:                   │
+│    231 │   │   │   pass                                         │
+│    232 │   │   except RerunSceneException as e:                 │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/temp/v │
+│ isualize_the_ellipse_equation_2025-06-09T09-21-35_bfb512ec-062f │
+│ -4b47-8ae6-52f9ae53d812.py:23 in construct                      │
+│                                                                 │
+│   20 │   │   self.play(Write(title))                            │
+│   21 │   │   self.wait(1)                                       │
+│   22 │   │                                                      │
+│ ❱ 23 │   │   equation = MathTex(r"\\frac{x^2}{1}}{a^2} + \\frac │
+│   24 │   │   self.play(Transform(title, equation))              │
+│   25 │   │   self.wait(1)                                       │
+│   26                                                            │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/mobject/text/tex_mobject.py:2 │
+│ 93 in __init__                                                  │
+│                                                                 │
+│   290 │   │   │   │   │   │   """,                              │
+│   291 │   │   │   │   │   ),                                    │
+│   292 │   │   │   │   )                                         │
+│ ❱ 293 │   │   │   raise compilation_error                       │
+│   294 │   │   self.set_color_by_tex_to_color_map(self.tex_to_co │
+│   295 │   │                                                     │
+│   296 │   │   if self.organize_left_to_right:                   │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/mobject/text/tex_mobject.py:2 │
+│ 72 in __init__                                                  │
+│                                                                 │
+│   269 │   │   self.brace_notation_split_occurred = False        │
+│   270 │   │   self.tex_strings = self._break_up_tex_strings(tex │
+│   271 │   │   try:                                              │
+│ ❱ 272 │   │   │   super().__init__(                             │
+│   273 │   │   │   │   self.arg_separator.join(self.tex_strings) │
+│   274 │   │   │   │   tex_environment=self.tex_environment,     │
+│   275 │   │   │   │   tex_template=self.tex_template,           │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/mobject/text/tex_mobject.py:8 │
+│ 1 in __init__                                                   │
+│                                                                 │
+│    78 │   │                                                     │
+│    79 │   │   assert isinstance(tex_string, str)                │
+│    80 │   │   self.tex_string = tex_string                      │
+│ ❱  81 │   │   file_name = tex_to_svg_file(                      │
+│    82 │   │   │   self._get_modified_expression(tex_string),    │
+│    83 │   │   │   environment=self.tex_environment,             │
+│    84 │   │   │   tex_template=self.tex_template,               │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/utils/tex_file_writing.py:63  │
+│ in tex_to_svg_file                                              │
+│                                                                 │
+│    60 │   if svg_file.exists():                                 │
+│    61 │   │   return svg_file                                   │
+│    62 │                                                         │
+│ ❱  63 │   dvi_file = compile_tex(                               │
+│    64 │   │   tex_file,                                         │
+│    65 │   │   tex_template.tex_compiler,                        │
+│    66 │   │   tex_template.output_format,                       │
+│                                                                 │
+│ /Users/balamsanjay/Desktop/SAAS/video-generation-service/venv/l │
+│ ib/python3.11/site-packages/manim/utils/tex_file_writing.py:213 │
+│  in compile_tex                                                 │
+│                                                                 │
+│   210 │   │   if exit_code != 0:                                │
+│   211 │   │   │   log_file = tex_file.with_suffix(".log")       │
+│   212 │   │   │   print_all_tex_errors(log_file, tex_compiler,  │
+│ ❱ 213 │   │   │   raise ValueError(                             │
+│   214 │   │   │   │   f"{tex_compiler} error converting to"     │
+│   215 │   │   │   │   f" {output_format[1:]}. See log output ab │
+│   216 │   │   │   │   f" the log file: {log_file}",             │
+╰─────────────────────────────────────────────────────────────────╯
+ValueError: latex error converting to dvi. See log output above or 
+the log file: media/Tex/a2010a1ecbaa3edf.log
+
+2025-06-09 14:52:27,302 - app.services.manim_compiler - INFO - Executing command: manim -qm visualize_the_parabola_equatio_2025-06-09T09-22-27_00c0f1e8-7c7e-4910-babb-f2b809c9bd84.py
+2025-06-09 14:52:53,295 - app.services.manim_compiler - INFO - Successfully compiled script visualize_the_parabola_equatio_2025-06-09T09-22-27 with job_id 00c0f1e8-7c7e-4910-babb-f2b809c9bd84
+2025-06-09 15:07:09,930 - app.main - INFO - 🔄 Shutting down Video Generation Service...
