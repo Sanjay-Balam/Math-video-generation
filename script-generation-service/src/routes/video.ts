@@ -1,5 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { generateManimScript, validateManimScript } from '../services/gemini';
+import { generateEnhancedManimScript } from '../services/enhancedGemini';
+import { qdrantService } from '../services/qdrant';
 import { 
   saveScriptToFile, 
   getGeneratedScripts, 
@@ -330,6 +332,207 @@ export const videoRoutes = (app: Elysia) => {
       tags: ['Script Generation'],
       summary: 'Generate script and render video',
       description: 'Generate a Manim Python script and automatically send it to the video generation service for rendering'
+    }
+  });
+
+  // Enhanced generate script endpoint with RAG
+  app.post('/generate-script-enhanced', async ({ body }) => {
+    const { prompt, saveToFile, useRAG = true } = body;
+    
+    try {
+      console.log(`Generating enhanced Manim script for prompt: ${prompt}`);
+      
+      let result;
+      if (useRAG) {
+        result = await generateEnhancedManimScript(prompt);
+      } else {
+        const script = await generateManimScript(prompt);
+        result = { script, similarScripts: [], contextUsed: false };
+      }
+      
+      // Validate the generated script
+      const validation = validateManimScript(result.script);
+      
+      let fileInfo = null;
+      if (saveToFile) {
+        try {
+          fileInfo = await saveScriptToFile(result.script, prompt);
+          console.log(`Script saved to: ${fileInfo.filepath}`);
+        } catch (error) {
+          console.error('Failed to save script to file:', error);
+        }
+      }
+      
+      return {
+        success: true,
+        prompt,
+        script: fileInfo?.perfectScript || result.script,
+        validation,
+        similar_scripts: result.similarScripts,
+        context_used: result.contextUsed,
+        file: fileInfo ? {
+          filename: fileInfo.filename,
+          saved: true,
+          path: fileInfo.filepath
+        } : null,
+        generatedAt: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Error generating enhanced script:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        prompt
+      };
+    }
+  }, {
+    body: t.Object({
+      prompt: t.String({ 
+        minLength: 10, 
+        maxLength: 1000,
+        description: 'Mathematical concept to visualize'
+      }),
+      saveToFile: t.Optional(t.Boolean({
+        description: 'Whether to save the generated script to a file',
+        default: true
+      })),
+      useRAG: t.Optional(t.Boolean({
+        description: 'Whether to use RAG (Retrieval Augmented Generation)',
+        default: true
+      }))
+    }),
+    detail: {
+      tags: ['Script Generation'],
+      summary: 'Generate enhanced Manim Python script with RAG',
+      description: 'Generate a Manim Python script using RAG with similar examples from vector database'
+    }
+  });
+
+  // Get similar scripts endpoint (enhanced)
+  app.post('/similar-scripts', async ({ body }) => {
+    const { prompt, limit = 5, useEnhanced = true } = body;
+    
+    try {
+      let similarScripts;
+      
+      if (useEnhanced) {
+        similarScripts = await qdrantService.findSimilarScriptsEnhanced(prompt, limit);
+      } else {
+        similarScripts = await qdrantService.findSimilarScripts(prompt, limit);
+      }
+      
+      return {
+        success: true,
+        prompt,
+        similar_scripts: similarScripts,
+        count: similarScripts.length,
+        method: useEnhanced ? 'enhanced' : 'vector-only'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }, {
+    body: t.Object({
+      prompt: t.String({ description: 'Search prompt' }),
+      limit: t.Optional(t.Number({ minimum: 1, maximum: 20, default: 5 })),
+      useEnhanced: t.Optional(t.Boolean({ description: 'Use enhanced hybrid search', default: true }))
+    }),
+    detail: {
+      tags: ['Vector Search'],
+      summary: 'Find similar scripts (enhanced)',
+      description: 'Search for similar scripts using hybrid vector + text matching'
+    }
+  });
+
+  // Get scripts by tags
+  app.post('/scripts-by-tags', async ({ body }) => {
+    const { tags, limit = 5 } = body;
+    
+    try {
+      const scripts = await qdrantService.getScriptsByTags(tags, limit);
+      
+      return {
+        success: true,
+        tags,
+        scripts,
+        count: scripts.length
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }, {
+    body: t.Object({
+      tags: t.Array(t.String(), { description: 'Tags to search for' }),
+      limit: t.Optional(t.Number({ minimum: 1, maximum: 20, default: 5 }))
+    }),
+    detail: {
+      tags: ['Vector Search'],
+      summary: 'Get scripts by tags',
+      description: 'Retrieve scripts that match specific tags'
+    }
+  });
+
+  // Vector DB status endpoint
+  app.get('/vector-db-status', async () => {
+    try {
+      const collectionInfo = await qdrantService.getCollectionInfo();
+      
+      return {
+        success: true,
+        status: 'connected',
+        collection_info: collectionInfo
+      };
+    } catch (error) {
+      return {
+        success: false,
+        status: 'disconnected',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }, {
+    detail: {
+      tags: ['Vector Search'],
+      summary: 'Check vector DB status',
+      description: 'Check the status and info of the Qdrant vector database'
+    }
+  });
+
+  // Add this new endpoint for fuzzy text search
+  app.post('/search-scripts-fuzzy', async ({ body }) => {
+    const { prompt, limit = 5, threshold = 0.3 } = body;
+    
+    try {
+      const scripts = await qdrantService.findScriptsByTextMatch(prompt, limit);
+      
+      return {
+        success: true,
+        prompt,
+        scripts: scripts.filter(s => s.similarity_score >= threshold),
+        count: scripts.length,
+        method: 'fuzzy-text-match'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }, {
+    body: t.Object({
+      prompt: t.String({ description: 'Search prompt' }),
+      limit: t.Optional(t.Number({ minimum: 1, maximum: 20, default: 5 })),
+      threshold: t.Optional(t.Number({ minimum: 0, maximum: 1, default: 0.3 }))
+    }),
+    detail: {
+      tags: ['Vector Search'],
+      summary: 'Fuzzy text search for scripts',
+      description: 'Search for scripts using fuzzy text matching on prompts'
     }
   });
 
