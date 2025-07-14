@@ -1,7 +1,5 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { llmService } from './llmProvider';
 import { qdrantService, type SimilarScript } from './qdrant';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function generateEnhancedManimScript(prompt: string): Promise<{
   script: string;
@@ -12,9 +10,7 @@ export async function generateEnhancedManimScript(prompt: string): Promise<{
     // Get similar scripts from vector DB
     const similarScripts = await qdrantService.findSimilarScripts(prompt, 3);
     
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-    // Build enhanced system prompt with context
+    // Build enhanced prompt with context examples
     const contextExamples = similarScripts.length > 0 
       ? `\n\nCONTEXT - Here are similar successful scripts for reference:\n${
           similarScripts.map((script, idx) => 
@@ -23,57 +19,11 @@ export async function generateEnhancedManimScript(prompt: string): Promise<{
         }\n\nUse these examples as inspiration but create something unique for the current prompt.`
       : '';
 
-    const systemPrompt = `You are an expert in mathematical visualization and Manim (Mathematical Animation Engine). 
-Your task is to generate clean, working Python Manim scripts that create educational mathematical animations.
+    // Create enhanced prompt with context
+    const enhancedPrompt = contextExamples ? `${prompt}\n${contextExamples}` : prompt;
 
-IMPORTANT GUIDELINES:
-1. Always create a class that inherits from Scene
-2. Use the construct() method to define the animation
-3. Focus on clear, educational visualizations
-4. Use appropriate Manim objects like MathTex, Text, NumberPlane, Circle, Square, etc.
-5. Include smooth animations with self.play()
-6. Add self.wait() for pauses between animations
-7. Keep the code clean and well-commented
-8. Ensure the script is complete and runnable
-9. Use proper imports from manim
-10. Make animations engaging and educational
-
-CRITICAL LATEX RULES:
-- ALWAYS use complete LaTeX expressions in MathTex
-- For fractions: use \\frac{numerator}{denominator} with BOTH parts
-- For square roots: use \\sqrt{expression}
-- For subscripts: use _{subscript}
-- For superscripts: use ^{superscript}
-- NEVER leave incomplete LaTeX like \\frac{-b without closing braces
-- Always balance your braces { and }
-
-CRITICAL PYTHON/MANIM RULES:
-- When creating lists of MathTex objects, access them with [0], [1], [2], etc.
-- NEVER use .get_left(), .get_center(), .get_right() on lists
-- Only use .get_left(), .get_center(), .get_right() on individual MathTex objects
-- Use VGroup(*list_name) to group list elements, then animate the VGroup
-- For individual elements from lists, use list_name[0], list_name[1], etc.${contextExamples}
-
-Now generate a Manim script for the following prompt. Return ONLY the Python code, no explanations or markdown formatting:`;
-
-    const fullPrompt = `${systemPrompt}\n\nUser Request: ${prompt}`;
-
-    const result = await model.generateContent(fullPrompt);
-    const response = await result.response;
-    let script = response.text();
-
-    // Clean up the response
-    script = script.replace(/```python\s*/g, '').replace(/```\s*/g, '');
-    script = script.trim();
-
-    // Validate basic structure
-    if (!script.includes('from manim import') && !script.includes('import manim')) {
-      script = `from manim import *\n\n${script}`;
-    }
-
-    if (!script.includes('class') || !script.includes('Scene') || !script.includes('construct')) {
-      throw new Error('Generated script does not contain valid Manim class structure');
-    }
+    // Generate script using the LLM provider
+    const script = await llmService.generateManimScript(enhancedPrompt);
 
     // Store the successful generation in vector DB
     try {

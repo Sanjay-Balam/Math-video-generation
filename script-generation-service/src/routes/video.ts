@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { generateManimScript, validateManimScript } from '../services/gemini';
+import { llmService, validateManimScript } from '../services/llmProvider';
 import { generateEnhancedManimScript } from '../services/enhancedGemini';
 import { qdrantService } from '../services/qdrant';
 import { 
@@ -20,8 +20,8 @@ export const videoRoutes = (app: Elysia) => {
     try {
       console.log(`Generating Manim script for prompt: ${prompt}`);
       
-      // Generate Manim script using Gemini
-      const script = await generateManimScript(prompt);
+      // Generate Manim script using configured LLM provider
+      const script = await llmService.generateManimScript(prompt);
       
       // Validate the generated script
       const validation = validateManimScript(script);
@@ -212,27 +212,27 @@ export const videoRoutes = (app: Elysia) => {
     }
   });
 
-  // Test Gemini API connection
-  app.get('/test-gemini', async () => {
+  // Test LLM API connection
+  app.get('/test-llm', async () => {
     try {
-      const testScript = await generateManimScript("Create a simple circle animation");
+      const testScript = await llmService.generateManimScript("Create a simple circle animation");
       return {
         success: true,
-        message: 'Gemini API is working correctly',
+        message: `${llmService.getProvider()} API is working correctly`,
         sampleOutput: testScript
       };
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
-        message: 'Gemini API connection failed'
+        message: `${llmService.getProvider()} API connection failed`
       };
     }
   }, {
     detail: {
       tags: ['Script Generation'],
-      summary: 'Test Gemini API connection',
-      description: 'Test if the Gemini API is properly configured and working'
+      summary: 'Test LLM API connection',
+      description: 'Test if the LLM API is properly configured and working'
     }
   });
 
@@ -246,7 +246,7 @@ export const videoRoutes = (app: Elysia) => {
       console.log(`Starting generate-and-render for prompt: ${prompt}`);
       
       // Generate script
-      const script = await generateManimScript(prompt);
+      const script = await llmService.generateManimScript(prompt);
       console.log('Script generated successfully');
       
       if (saveToFile) {
@@ -346,7 +346,7 @@ export const videoRoutes = (app: Elysia) => {
       if (useRAG) {
         result = await generateEnhancedManimScript(prompt);
       } else {
-        const script = await generateManimScript(prompt);
+        const script = await llmService.generateManimScript(prompt);
         result = { script, similarScripts: [], contextUsed: false };
       }
       

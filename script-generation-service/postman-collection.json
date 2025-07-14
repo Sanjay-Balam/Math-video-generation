@@ -1,0 +1,341 @@
+{
+  "info": {
+    "name": "Math Video Generator API - Test Collection",
+    "description": "Test collection for Math Video Generator API with LLM integration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Basic Tests",
+      "item": [
+        {
+          "name": "Ping Test",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/test/ping",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["test", "ping"]
+            }
+          }
+        },
+        {
+          "name": "Check Current Provider",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/test/current-provider",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["test", "current-provider"]
+            }
+          }
+        },
+        {
+          "name": "Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Provider Tests",
+      "item": [
+        {
+          "name": "Test OpenRouter Directly",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Create a simple animated circle that changes color from blue to red\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/test/openrouter",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["test", "openrouter"]
+            }
+          }
+        },
+        {
+          "name": "Test Gemini Directly",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Create a simple animated circle that changes color from blue to red\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/test/gemini",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["test", "gemini"]
+            }
+          }
+        },
+        {
+          "name": "Compare Providers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Show a sine wave being traced by a point on a circle\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/test/compare-providers",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["test", "compare-providers"]
+            }
+          }
+        },
+        {
+          "name": "Raw OpenRouter API Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"What is 2+2?\",\n  \"model\": \"deepseek/deepseek-chat\",\n  \"temperature\": 0.7\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/test/raw-openrouter",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["test", "raw-openrouter"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Generation Tests",
+      "item": [
+        {
+          "name": "Generate Simple Script",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Create a simple circle animation\",\n  \"saveToFile\": false\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/generate-script",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "generate-script"]
+            }
+          }
+        },
+        {
+          "name": "Generate Complex Script",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Visualize the Pythagorean theorem with animated squares on each side of a right triangle, showing that a² + b² = c²\",\n  \"saveToFile\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/generate-script",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "generate-script"]
+            }
+          }
+        },
+        {
+          "name": "Run Sample Generations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/test/sample-generations",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["test", "sample-generations"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Handling Tests",
+      "item": [
+        {
+          "name": "Test Invalid Prompt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenario\": \"invalid-prompt\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/test/error-handling",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["test", "error-handling"]
+            }
+          }
+        },
+        {
+          "name": "Test Very Long Prompt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenario\": \"very-long-prompt\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/test/error-handling",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["test", "error-handling"]
+            }
+          }
+        },
+        {
+          "name": "Test Special Characters",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenario\": \"special-characters\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/test/error-handling",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["test", "error-handling"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Validation & Utils",
+      "item": [
+        {
+          "name": "Validate Script",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"script\": \"from manim import *\\n\\nclass TestScene(Scene):\\n    def construct(self):\\n        circle = Circle()\\n        self.play(Create(circle))\\n        self.wait()\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/validate-script",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "validate-script"]
+            }
+          }
+        },
+        {
+          "name": "Get Sample Prompts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/sample-prompts",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "sample-prompts"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ]
+}

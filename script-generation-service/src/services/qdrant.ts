@@ -23,11 +23,15 @@ export interface SimilarScript {
 
 class QdrantService {
   private client: any; // Using any temporarily
-  private genAI: GoogleGenerativeAI;
+  private genAI: GoogleGenerativeAI | null = null;
   private collectionName: string;
+  private isAvailable: boolean = false;
 
   constructor() {
-    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+    // Only initialize Gemini if API key is available (for embeddings)
+    if (process.env.GEMINI_API_KEY) {
+      this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    }
     this.collectionName = process.env.QDRANT_COLLECTION_NAME || 'manim_scripts';
     this.initializeClient();
   }
@@ -37,13 +41,20 @@ class QdrantService {
       // @ts-ignore
       const { QdrantClient } = await import('@qdrant/js-client-rest');
       this.client = new QdrantClient({
-        url: process.env.QDRANT_URL!,
-        apiKey: process.env.QDRANT_API_KEY!,
+        url: process.env.QDRANT_URL || 'http://localhost:6333',
+        apiKey: process.env.QDRANT_API_KEY,
       });
+      
+      // Test connection
+      await this.client.getCollections();
+      this.isAvailable = true;
+      console.log('✅ Qdrant connection established');
       
       await this.initializeCollection();
     } catch (error) {
-      console.error('❌ Failed to initialize Qdrant client:', error);
+      console.warn('⚠️  Qdrant is not available. Service will work without vector search.');
+      console.warn('   To enable vector search, start Qdrant on port 6333');
+      this.isAvailable = false;
     }
   }
 
@@ -74,7 +85,8 @@ class QdrantService {
       await this.seedCollection();
       
     } catch (error) {
-      console.error('❌ Failed to initialize Qdrant collection:', error);
+      console.warn('⚠️  Failed to initialize Qdrant collection:', error);
+      this.isAvailable = false;
     }
   }
 
@@ -133,6 +145,11 @@ class PythagoreanTheorem(Scene):
   }
 
   private async generateEmbedding(text: string): Promise<number[]> {
+    if (!this.genAI) {
+      console.warn('⚠️  Gemini API not configured, cannot generate embeddings');
+      return [];
+    }
+    
     try {
       // Use text-embedding-004 which is available and stable
       const model = this.genAI.getGenerativeModel({ model: 'text-embedding-004' });
@@ -148,6 +165,11 @@ class PythagoreanTheorem(Scene):
   }
 
   async storeScript(scriptData: Omit<ScriptEmbedding, 'id'>): Promise<string> {
+    if (!this.isAvailable) {
+      console.log('⚠️  Qdrant not available, skipping script storage');
+      return Date.now().toString();
+    }
+    
     try {
       // Generate embedding for the prompt
       const embedding = await this.generateEmbedding(scriptData.prompt);
@@ -198,6 +220,11 @@ class PythagoreanTheorem(Scene):
   }
 
   async findSimilarScripts(prompt: string, limit: number = 3): Promise<SimilarScript[]> {
+    if (!this.isAvailable) {
+      console.log('⚠️  Qdrant not available, returning empty results');
+      return [];
+    }
+    
     try {
       console.log(`🔍 Searching for similar scripts to: "${prompt}"`);
       
@@ -261,6 +288,10 @@ class PythagoreanTheorem(Scene):
 
   // Add a new method for exact text matching
   async findScriptsByTextMatch(prompt: string, limit: number = 5): Promise<SimilarScript[]> {
+    if (!this.isAvailable) {
+      return [];
+    }
+    
     try {
       // Use scroll to get all scripts and filter by text similarity
       const searchResult = await this.client.scroll(this.collectionName, {
@@ -302,6 +333,11 @@ class PythagoreanTheorem(Scene):
 
   // Enhanced method that combines both approaches
   async findSimilarScriptsEnhanced(prompt: string, limit: number = 3): Promise<SimilarScript[]> {
+    if (!this.isAvailable) {
+      console.log('⚠️  Qdrant not available, returning empty results');
+      return [];
+    }
+    
     try {
       console.log(`🔍 Enhanced search for: "${prompt}"`);
       
@@ -351,6 +387,10 @@ class PythagoreanTheorem(Scene):
   }
 
   async getScriptsByTags(tags: string[], limit: number = 5): Promise<SimilarScript[]> {
+    if (!this.isAvailable) {
+      return [];
+    }
+    
     try {
       const searchResult = await this.client.scroll(this.collectionName, {
         filter: {
@@ -381,6 +421,10 @@ class PythagoreanTheorem(Scene):
   }
 
   async getCollectionInfo() {
+    if (!this.isAvailable) {
+      return { status: 'not_available', message: 'Qdrant service is not running' };
+    }
+    
     try {
       const info = await this.client.getCollection(this.collectionName);
       return info;
@@ -391,6 +435,10 @@ class PythagoreanTheorem(Scene):
   }
 
   async deleteScript(id: string): Promise<boolean> {
+    if (!this.isAvailable) {
+      return false;
+    }
+    
     try {
       await this.client.delete(this.collectionName, {
         wait: true,

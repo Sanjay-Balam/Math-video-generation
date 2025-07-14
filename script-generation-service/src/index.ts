@@ -2,8 +2,11 @@ import { Elysia } from 'elysia';
 import { swagger } from '@elysiajs/swagger';
 import { cors } from '@elysiajs/cors';
 import { videoRoutes } from './routes/video';
+import { testRoutes } from './routes/test';
+import { llmService } from './services/llmProvider';
 
 console.log('🚀 Starting Math Video Generator API...');
+console.log(`📌 Using LLM Provider: ${process.env.LLM_PROVIDER || 'openrouter'}`);
 
 // Create Elysia app
 const app = new Elysia();
@@ -17,40 +20,61 @@ app.use(swagger({
     info: {
       title: 'Math Video Generator API',
       version: '1.0.0',
-      description: 'API for generating Manim Python scripts using Gemini AI'
+      description: 'API for generating Manim Python scripts using LLM providers'
     },
     tags: [
-      { name: 'Script Generation', description: 'Manim script generation endpoints' }
+      { name: 'Script Generation', description: 'Manim script generation endpoints' },
+      { name: 'Testing', description: 'Test endpoints for LLM integration' },
+      { name: 'Script Management', description: 'Manage generated scripts' },
+      { name: 'Vector Search', description: 'Vector database operations' }
     ]
   }
 }));
 
 // Register routes
 videoRoutes(app);
+testRoutes(app);
 
 // Health check endpoints
 app.get('/', () => ({
   message: 'Math Video Generator API',
   version: '1.0.0',
   status: 'running',
+  llmProvider: llmService.getProvider(),
   endpoints: {
     docs: '/swagger',
     generateScript: '/api/generate-script',
     validateScript: '/api/validate-script',
-    samplePrompts: '/api/sample-prompts'
+    samplePrompts: '/api/sample-prompts',
+    testLLM: '/api/test-llm',
+    providerInfo: '/api/provider-info',
+    testEndpoints: '/test/*'
   }
 }));
 
 app.get('/health', () => ({
   status: 'healthy',
   timestamp: new Date().toISOString(),
-  geminiConfigured: !!process.env.GEMINI_API_KEY
+  llmProvider: llmService.getProvider(),
+  availableProviders: llmService.getAvailableProviders()
+}));
+
+// New endpoint to get provider information
+app.get('/api/provider-info', () => ({
+  currentProvider: llmService.getProvider(),
+  availableProviders: llmService.getAvailableProviders(),
+  configuration: {
+    openrouter: !!process.env.OPENROUTER_API_KEY,
+    gemini: !!process.env.GEMINI_API_KEY
+  }
 }));
 
 app.listen(process.env.PORT as string);
 
 console.log(`🦊 Elysia server is running at http://localhost:${process.env.PORT}`);
 console.log(`📖 API Documentation: http://localhost:${process.env.PORT}/swagger`);
-console.log(`🔑 Gemini API configured: ${process.env.GEMINI_API_KEY ? '✅' : '❌'}`);
+console.log(`🤖 LLM Provider: ${llmService.getProvider()}`);
+console.log(`🔑 OpenRouter configured: ${process.env.OPENROUTER_API_KEY ? '✅' : '❌'}`);
+console.log(`🔑 Gemini configured: ${process.env.GEMINI_API_KEY ? '✅' : '❌'}`);
 
 export type App = typeof app;
