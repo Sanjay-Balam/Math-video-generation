@@ -12,6 +12,10 @@ A modern API service for generating Manim Python scripts from mathematical promp
 - 📚 Clean, well-documented API with Swagger UI
 - ⚡ Built with Bun.js and Elysia for high performance
 - 🗄️ Vector database integration for context-aware generation
+- 🎥 **Video Generation Integration**: Automatically generate videos from scripts
+- 📊 **Job Status Monitoring**: Real-time video generation progress tracking
+- 💾 **Video Management**: Download, list, and delete generated videos
+- 🔄 **Polling Support**: Wait for video completion with progress callbacks
 
 ## Prerequisites
 
@@ -20,6 +24,7 @@ A modern API service for generating Manim Python scripts from mathematical promp
   - OpenRouter API key (FREE - recommended)
   - Google Gemini API key (paid after free trial)
 - Optional: Qdrant vector database for enhanced generation
+- **Video Generation Service**: Running video-generation-service on port 8001 for video features
 
 ## Installation
 
@@ -129,6 +134,57 @@ curl -X POST http://localhost:5000/api/validate-script \
   -d '{
     "script": "from manim import * ..."
   }'
+```
+
+### Video Generation Endpoints
+
+#### Generate Script and Video (Basic)
+```bash
+curl -X POST http://localhost:5000/api/generate-and-render \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Visualize the Pythagorean theorem with animated squares",
+    "saveToFile": true
+  }'
+```
+
+#### Generate Script and Video (Enhanced)
+```bash
+curl -X POST http://localhost:5000/api/generate-and-render-enhanced \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Create a sine wave animation",
+    "saveToFile": true,
+    "quality": "high_quality",
+    "format": "mp4",
+    "frameRate": 30,
+    "waitForCompletion": true
+  }'
+```
+
+#### Check Video Job Status
+```bash
+curl http://localhost:5000/api/video-status/{job_id}
+```
+
+#### Download Generated Video
+```bash
+curl -O http://localhost:5000/api/download-video/{job_id}
+```
+
+#### List All Videos
+```bash
+curl http://localhost:5000/api/videos?page=1&limit=10
+```
+
+#### Delete Video
+```bash
+curl -X DELETE http://localhost:5000/api/videos/{job_id}
+```
+
+#### Check Video Service Health
+```bash
+curl http://localhost:5000/api/video-service-health
 ```
 
 ### Enhanced Endpoints (with Vector DB)

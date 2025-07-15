@@ -36,11 +36,22 @@ CRITICAL PYTHON/MANIM RULES:
 - Only use .get_left(), .get_center(), .get_right() on individual MathTex objects
 - Use VGroup(*list_name) to group list elements, then animate the VGroup
 - For individual elements from lists, use list_name[0], list_name[1], etc.
+- MODERN MANIM SYNTAX: Use .animate for transformations in self.play()
+- CORRECT: self.play(triangle.animate.set_color(YELLOW))
+- WRONG: self.play(triangle.set_color, YELLOW)
+- CORRECT: self.play(text.animate.move_to(UP))
+- WRONG: self.play(text.move_to, UP)
 
 SAFE PRACTICES:
 - Create individual MathTex objects for each mathematical symbol/term
 - Use .next_to() or .move_to() for positioning instead of manual coordinates when possible
 - When using lists: access with [index], when using individual objects: use .get_methods()
+- NEVER reference self.time without defining it first as a ValueTracker
+- NEVER use always_redraw() without ensuring all referenced attributes exist
+- Always initialize any custom attributes in the construct() method before using them
+- NEVER assign to function calls (func() = value is invalid Python syntax)
+- Use == for comparisons, = for assignments
+- NEVER assign to method calls like obj.method() = value
 
 CORRECT EXAMPLES:
 \`\`\`python
@@ -56,6 +67,14 @@ equation.get_center()  # CORRECT
 # CORRECT - VGroup from list
 formula = VGroup(*formula_parts)
 formula.arrange(RIGHT)
+
+# CORRECT - Time-based animation with ValueTracker
+self.time = ValueTracker(0)  # Initialize BEFORE using
+graph = always_redraw(
+    lambda: axes.plot(lambda x: np.sin(x + self.time.get_value()), color=BLUE)
+)
+self.add(graph)
+self.play(self.time.animate.set_value(2*PI), run_time=4)
 \`\`\`
 
 WRONG EXAMPLES:
@@ -66,6 +85,25 @@ formula_parts.get_left()  # WRONG! This will cause AttributeError
 
 # WRONG - Incomplete LaTeX
 MathTex(r"\\frac{-b")  # WRONG! Missing closing brace and denominator
+
+# WRONG - Using self.time without defining it
+graph = always_redraw(
+    lambda: axes.plot(lambda x: np.sin(x + self.time), color=BLUE)  # WRONG! self.time not defined
+)
+
+# WRONG - Using always_redraw without ValueTracker
+self.time = 0  # WRONG! Should be ValueTracker(0)
+graph = always_redraw(
+    lambda: axes.plot(lambda x: np.sin(x + self.time), color=BLUE)  # WRONG! Can't animate plain numbers
+)
+
+# WRONG - Invalid Python syntax (assigning to function call)
+my_function() = 5  # WRONG! This is invalid Python syntax
+obj.method() = value  # WRONG! Cannot assign to method calls
+
+# WRONG - Using = instead of == in conditions
+if x = 5:  # WRONG! Should be ==
+    pass
 \`\`\`
 
 EXAMPLE STRUCTURE:
@@ -125,6 +163,9 @@ Now generate a Manim script for the following prompt. Return ONLY the Python cod
     // Apply fixes (but be much more conservative)
     script = fixLatexSyntaxErrors(script);
     script = fixObviousErrors(script);
+    script = fixManimSyntaxErrors(script);
+    script = fixAnimationErrors(script);
+    script = fixSyntaxErrors(script);
 
     return script;
   } catch (error) {
@@ -183,6 +224,204 @@ function fixObviousErrors(script: string): string {
       if (method === 'right') return `${varName}[-1]`;
       return match;
     }
+  );
+  
+  return fixedScript;
+}
+
+// Function to fix Manim syntax errors - convert old syntax to new animate syntax
+function fixManimSyntaxErrors(script: string): string {
+  let fixedScript = script;
+  
+  // Fix old self.play syntax with method calls
+  // Pattern: self.play(object.method, arg1, arg2, ...)
+  // Replace with: self.play(object.animate.method(arg1, arg2, ...))
+  
+  // Common methods that need to be converted
+  const methodsToFix = [
+    'set_color', 'move_to', 'shift', 'scale', 'rotate', 'set_opacity',
+    'set_fill', 'set_stroke', 'set_width', 'set_height', 'to_edge',
+    'to_corner', 'next_to', 'align_to', 'center', 'match_x', 'match_y'
+  ];
+  
+  methodsToFix.forEach(method => {
+    // Pattern: self.play(object.method, args...)
+    const oldPattern = new RegExp(
+      `self\\.play\\(\\s*([\\w\\.\\[\\]]+)\\.${method}\\s*,\\s*([^)]+)\\)`,
+      'g'
+    );
+    
+    fixedScript = fixedScript.replace(oldPattern, (match, object, args) => {
+      // Clean up args - remove trailing commas and whitespace
+      const cleanArgs = args.trim().replace(/,$/, '');
+      return `self.play(${object}.animate.${method}(${cleanArgs}))`;
+    });
+    
+    // Pattern: self.play(object.method) - no arguments
+    const oldPatternNoArgs = new RegExp(
+      `self\\.play\\(\\s*([\\w\\.\\[\\]]+)\\.${method}\\s*\\)`,
+      'g'
+    );
+    
+    fixedScript = fixedScript.replace(oldPatternNoArgs, (match, object) => {
+      return `self.play(${object}.animate.${method}())`;
+    });
+  });
+  
+  // Handle multi-argument self.play calls (multiple objects being animated)
+  // Pattern: self.play(obj1.method, arg1, obj2.method, arg2, ...)
+  fixedScript = fixedScript.replace(
+    /self\.play\(\s*([^)]+)\s*\)/g,
+    (match, content) => {
+      // Split by commas but be careful about nested parentheses
+      const parts = [];
+      let currentPart = '';
+      let parenCount = 0;
+      
+      for (let i = 0; i < content.length; i++) {
+        const char = content[i];
+        if (char === '(') parenCount++;
+        if (char === ')') parenCount--;
+        
+        if (char === ',' && parenCount === 0) {
+          parts.push(currentPart.trim());
+          currentPart = '';
+        } else {
+          currentPart += char;
+        }
+      }
+      if (currentPart.trim()) {
+        parts.push(currentPart.trim());
+      }
+      
+      // Convert each part if it looks like old syntax
+      const convertedParts = [];
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
+        
+        // Check if this looks like object.method followed by arguments
+        const methodMatch = part.match(/^([\\w\\.\\[\\]]+)\\.(\\w+)$/);
+        if (methodMatch && methodsToFix.includes(methodMatch[2])) {
+          // This is a method call, next parts might be its arguments
+          const [, object, method] = methodMatch;
+          const args = [];
+          
+          // Collect arguments until we hit another method call or end
+          let j = i + 1;
+          while (j < parts.length) {
+            const nextPart = parts[j];
+            const nextMethodMatch = nextPart.match(/^([\\w\\.\\[\\]]+)\\.(\\w+)$/);
+            if (nextMethodMatch && methodsToFix.includes(nextMethodMatch[2])) {
+              break; // Found another method call
+            }
+            args.push(nextPart);
+            j++;
+          }
+          
+          // Create the animate version
+          if (args.length > 0) {
+            convertedParts.push(`${object}.animate.${method}(${args.join(', ')})`);
+          } else {
+            convertedParts.push(`${object}.animate.${method}()`);
+          }
+          
+          i = j - 1; // Skip the arguments we processed
+        } else if (!methodMatch) {
+          // This is not a method call, keep as is
+          convertedParts.push(part);
+        }
+      }
+      
+      if (convertedParts.length > 0) {
+        return `self.play(${convertedParts.join(', ')})`;
+      }
+      
+      return match; // Return original if we couldn't parse it
+    }
+  );
+  
+  return fixedScript;
+}
+
+// Function to fix common animation errors
+function fixAnimationErrors(script: string): string {
+  let fixedScript = script;
+  
+  // Fix cases where self.time is used without being defined as ValueTracker
+  if (fixedScript.includes('self.time') && !fixedScript.includes('ValueTracker')) {
+    // Check if we need to add ValueTracker import
+    if (!fixedScript.includes('ValueTracker')) {
+      fixedScript = fixedScript.replace(
+        /from manim import \*/,
+        'from manim import *'
+      );
+    }
+    
+    // Look for the construct method and add ValueTracker initialization
+    const constructMatch = fixedScript.match(/(def construct\(self\):\s*)/);
+    if (constructMatch) {
+      // Insert ValueTracker initialization right after construct method definition
+      fixedScript = fixedScript.replace(
+        constructMatch[0],
+        constructMatch[0] + '\n        # Initialize time tracker for animations\n        self.time = ValueTracker(0)\n'
+      );
+    }
+  }
+  
+  // Fix cases where always_redraw uses self.time directly instead of self.time.get_value()
+  fixedScript = fixedScript.replace(
+    /self\.time(?!\.get_value\(\))/g,
+    'self.time.get_value()'
+  );
+  
+  // Fix cases where time is used as a plain number in animations
+  fixedScript = fixedScript.replace(
+    /self\.time\s*=\s*(\d+)/g,
+    'self.time = ValueTracker($1)'
+  );
+  
+  return fixedScript;
+}
+
+// Function to fix common Python syntax errors
+function fixSyntaxErrors(script: string): string {
+  let fixedScript = script;
+  
+  // Fix common assignment errors where functions are assigned instead of called
+  // Pattern: function_name() = value (should be variable = function_name())
+  fixedScript = fixedScript.replace(
+    /(\w+)\(\)\s*=\s*([^=\n]+)/g,
+    '$2 = $1()'
+  );
+  
+  // Fix cases where .get_value() is assigned to instead of the tracker
+  fixedScript = fixedScript.replace(
+    /(\w+)\.get_value\(\)\s*=\s*([^=\n]+)/g,
+    '$1.set_value($2)'
+  );
+  
+  // Fix cases where method calls are used in assignment positions
+  fixedScript = fixedScript.replace(
+    /(\w+\.\w+\([^)]*\))\s*=\s*([^=\n]+)/g,
+    (match, methodCall, value) => {
+      // Only fix if it looks like a method call that shouldn't be assigned to
+      if (methodCall.includes('.animate.') || methodCall.includes('.get_')) {
+        return `# Fixed invalid assignment: ${match}`;
+      }
+      return match;
+    }
+  );
+  
+  // Fix comparison operator mistakes (= instead of ==)
+  fixedScript = fixedScript.replace(
+    /if\s+([^=]+)\s*=\s*([^=\n]+):/g,
+    'if $1 == $2:'
+  );
+  
+  // Fix while loop comparison mistakes
+  fixedScript = fixedScript.replace(
+    /while\s+([^=]+)\s*=\s*([^=\n]+):/g,
+    'while $1 == $2:'
   );
   
   return fixedScript;

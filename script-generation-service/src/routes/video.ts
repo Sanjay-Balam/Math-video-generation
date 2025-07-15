@@ -8,6 +8,7 @@ import {
   readScriptFile, 
   deleteScriptFile 
 } from '../services/fileManager';
+import { videoService } from '../services/videoService';
 
 /**
  * Registers video-related routes on the given Elysia app instance.
@@ -236,7 +237,7 @@ export const videoRoutes = (app: Elysia) => {
     }
   });
 
-  // New endpoint in script-generation-service
+  // Generate and render endpoint (legacy - use generate-and-render-enhanced for new features)
   app.post('/generate-and-render', async ({ body }) => {
     const { prompt, saveToFile } = body as { prompt: string, saveToFile?: boolean };
     
@@ -254,40 +255,15 @@ export const videoRoutes = (app: Elysia) => {
         console.log(`Script saved to: ${fileInfo.filepath}`);
       }
 
-      // Configure video service URL (use localhost for local development)
-      const videoServiceUrl = process.env.VIDEO_SERVICE_URL || 'http://localhost:8001';
-      
-      console.log(`Sending request to video service: ${videoServiceUrl}`);
-      
-      // Send to video service with timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-      
-      const videoResponse = await fetch(`${videoServiceUrl}/api/v1/generate/script`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          script_content: fileInfo?.perfectScript || script,
-          script_name: fileInfo?.filename.replace('.py', '') || prompt.substring(0, 50),
-          quality: "medium_quality",
-          format: "mp4",
-          frame_rate: 30
-        }),
-        signal: controller.signal
+      // Use the new video service client
+      const videoJob = await videoService.generateVideo({
+        script_content: fileInfo?.perfectScript || script,
+        script_name: fileInfo?.filename.replace('.py', '') || prompt.substring(0, 50),
+        quality: 'medium_quality',
+        format: 'mp4',
+        frame_rate: 30
       });
-
-      clearTimeout(timeoutId);
-
-      if (!videoResponse.ok) {
-        const errorText = await videoResponse.text();
-        console.error(`Video service responded with ${videoResponse.status}: ${errorText}`);
-        throw new Error(`Video service error (${videoResponse.status}): ${errorText}`);
-      }
-
-      const videoJob = await videoResponse.json();
+      
       console.log('Video job created successfully:', videoJob);
       
       return {
@@ -304,7 +280,7 @@ export const videoRoutes = (app: Elysia) => {
         if (error.name === 'AbortError') {
           errorMessage = 'Request to video service timed out';
         } else if (error.message.includes('fetch')) {
-          errorMessage = 'Cannot connect to video generation service. Please ensure it is running on http://localhost:8001';
+          errorMessage = 'Cannot connect to video generation service. Please ensure it is running';
         } else {
           errorMessage = error.message;
         }
@@ -533,6 +509,289 @@ export const videoRoutes = (app: Elysia) => {
       tags: ['Vector Search'],
       summary: 'Fuzzy text search for scripts',
       description: 'Search for scripts using fuzzy text matching on prompts'
+    }
+  });
+
+  // Check video generation job status
+  app.get('/video-status/:jobId', async ({ params }) => {
+    const { jobId } = params;
+    
+    try {
+      const status = await videoService.getJobStatus(jobId);
+      
+      return {
+        success: true,
+        job_id: jobId,
+        status: status.status,
+        progress: status.progress,
+        message: status.message,
+        created_at: status.created_at,
+        started_at: status.started_at,
+        completed_at: status.completed_at,
+        error_message: status.error_message,
+        output_file: status.output_file,
+        file_size: status.file_size
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        job_id: jobId
+      };
+    }
+  }, {
+    params: t.Object({
+      jobId: t.String({ description: 'Video generation job ID' })
+    }),
+    detail: {
+      tags: ['Video Generation'],
+      summary: 'Check video generation job status',
+      description: 'Get the current status of a video generation job'
+    }
+  });
+
+  // Download generated video
+  app.get('/download-video/:jobId', async ({ params, set }) => {
+    const { jobId } = params;
+    
+    try {
+      const videoResponse = await videoService.downloadVideo(jobId);
+      
+      if (!videoResponse.ok) {
+        set.status = 404;
+        return {
+          success: false,
+          error: 'Video not found or not ready',
+          job_id: jobId
+        };
+      }
+
+      const contentType = videoResponse.headers.get('content-type') || 'video/mp4';
+      const contentDisposition = videoResponse.headers.get('content-disposition') || `attachment; filename="${jobId}.mp4"`;
+      
+      set.headers['content-type'] = contentType;
+      set.headers['content-disposition'] = contentDisposition;
+      
+      return videoResponse.body;
+    } catch (error) {
+      set.status = 500;
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        job_id: jobId
+      };
+    }
+  }, {
+    params: t.Object({
+      jobId: t.String({ description: 'Video generation job ID' })
+    }),
+    detail: {
+      tags: ['Video Generation'],
+      summary: 'Download generated video',
+      description: 'Download the generated video file for a completed job'
+    }
+  });
+
+  // List all generated videos
+  app.get('/videos', async ({ query }) => {
+    const page = parseInt(query.page || '1');
+    const limit = parseInt(query.limit || '20');
+    
+    try {
+      const videos = await videoService.listVideos(page, limit);
+      
+      return {
+        success: true,
+        videos: videos.videos,
+        total: videos.total,
+        page: videos.page,
+        limit: videos.limit,
+        pages: videos.pages
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }, {
+    query: t.Object({
+      page: t.Optional(t.String({ description: 'Page number (default: 1)' })),
+      limit: t.Optional(t.String({ description: 'Items per page (default: 20)' }))
+    }),
+    detail: {
+      tags: ['Video Generation'],
+      summary: 'List generated videos',
+      description: 'Get a paginated list of all generated videos'
+    }
+  });
+
+  // Delete a generated video
+  app.delete('/videos/:jobId', async ({ params }) => {
+    const { jobId } = params;
+    
+    try {
+      await videoService.deleteVideo(jobId);
+      
+      return {
+        success: true,
+        message: `Video ${jobId} deleted successfully`,
+        job_id: jobId
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        job_id: jobId
+      };
+    }
+  }, {
+    params: t.Object({
+      jobId: t.String({ description: 'Video generation job ID' })
+    }),
+    detail: {
+      tags: ['Video Generation'],
+      summary: 'Delete generated video',
+      description: 'Delete a generated video file'
+    }
+  });
+
+  // Enhanced generate-and-render with polling
+  app.post('/generate-and-render-enhanced', async ({ body }) => {
+    const { prompt, saveToFile = true, quality, format, frameRate, waitForCompletion = false } = body;
+    
+    let fileInfo = null;
+    
+    try {
+      console.log(`Starting enhanced generate-and-render for prompt: ${prompt}`);
+      
+      // Generate script
+      const script = await llmService.generateManimScript(prompt);
+      console.log('Script generated successfully');
+      
+      if (saveToFile) {
+        fileInfo = await saveScriptToFile(script, prompt);
+        console.log(`Script saved to: ${fileInfo.filepath}`);
+      }
+
+      // Send to video service with enhanced options
+      const videoJob = await videoService.generateVideo({
+        script_content: fileInfo?.perfectScript || script,
+        script_name: fileInfo?.filename.replace('.py', '') || prompt.substring(0, 50),
+        quality: quality || 'medium_quality',
+        format: format || 'mp4',
+        frame_rate: frameRate || 30
+      });
+      
+      console.log('Video job created successfully:', videoJob);
+      
+      let finalStatus = videoJob;
+      
+      // If waitForCompletion is true, poll until done
+      if (waitForCompletion) {
+        console.log('Waiting for video completion...');
+        finalStatus = await videoService.waitForCompletion(videoJob.job_id, (status) => {
+          console.log(`Video progress: ${status.progress}% - ${status.message}`);
+        });
+      }
+      
+      return {
+        success: true,
+        script: fileInfo,
+        video_job: finalStatus,
+        message: waitForCompletion ? 
+          (finalStatus.status === 'completed' ? 'Script generated and video completed' : 'Video generation failed') :
+          'Script generated and video compilation started'
+      };
+    } catch (error) {
+      console.error('Error in enhanced generate-and-render:', error);
+      
+      let errorMessage = 'Unknown error';
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = 'Request to video service timed out';
+        } else if (error.message.includes('fetch')) {
+          errorMessage = 'Cannot connect to video generation service. Please ensure it is running';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      return {
+        success: false,
+        error: errorMessage,
+        script: fileInfo
+      };
+    }
+  }, {
+    body: t.Object({
+      prompt: t.String({ 
+        minLength: 10, 
+        maxLength: 1000,
+        description: 'Mathematical concept to visualize'
+      }),
+      saveToFile: t.Optional(t.Boolean({
+        description: 'Whether to save the generated script to a file',
+        default: true
+      })),
+      quality: t.Optional(t.Union([
+        t.Literal('low_quality'),
+        t.Literal('medium_quality'),
+        t.Literal('high_quality')
+      ], {
+        description: 'Video quality level',
+        default: 'medium_quality'
+      })),
+      format: t.Optional(t.Union([
+        t.Literal('mp4'),
+        t.Literal('mov'),
+        t.Literal('avi')
+      ], {
+        description: 'Video output format',
+        default: 'mp4'
+      })),
+      frameRate: t.Optional(t.Number({
+        minimum: 15,
+        maximum: 60,
+        description: 'Video frame rate',
+        default: 30
+      })),
+      waitForCompletion: t.Optional(t.Boolean({
+        description: 'Whether to wait for video completion before returning',
+        default: false
+      }))
+    }),
+    detail: {
+      tags: ['Video Generation'],
+      summary: 'Enhanced generate script and render video',
+      description: 'Generate a Manim Python script and render video with advanced options and optional completion waiting'
+    }
+  });
+
+  // Check video service health
+  app.get('/video-service-health', async () => {
+    try {
+      const isHealthy = await videoService.checkServiceHealth();
+      
+      return {
+        success: true,
+        healthy: isHealthy,
+        message: isHealthy ? 'Video service is healthy' : 'Video service is not responding',
+        service_url: process.env.VIDEO_SERVICE_URL || 'http://localhost:8001'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        healthy: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        service_url: process.env.VIDEO_SERVICE_URL || 'http://localhost:8001'
+      };
+    }
+  }, {
+    detail: {
+      tags: ['Video Generation'],
+      summary: 'Check video service health',
+      description: 'Check if the video generation service is healthy and responding'
     }
   });
 

@@ -23,7 +23,7 @@ async def lifespan(app: FastAPI):
     """
     Application lifespan manager
     """
-    logger.info("🚀 Starting Video Generation Service...")
+    logger.info("Starting Video Generation Service...")
     
     # Startup
     health_service = HealthService()
@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
     yield
     
     # Shutdown
-    logger.info("🔄 Shutting down Video Generation Service...")
+    logger.info("Shutting down Video Generation Service...")
 
 def create_app() -> FastAPI:
     """
