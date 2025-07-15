@@ -340,7 +340,7 @@ export const testRoutes = (app: Elysia) => {
         headers: {
           'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://github.com/math-video-generation',
+          'HTTP-Referer': 'http://localhost:5000',
           'X-Title': 'Math Video Generation Test'
         },
         body: JSON.stringify({

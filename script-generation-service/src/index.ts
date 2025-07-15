@@ -3,6 +3,7 @@ import { swagger } from '@elysiajs/swagger';
 import { cors } from '@elysiajs/cors';
 import { videoRoutes } from './routes/video';
 import { testRoutes } from './routes/test';
+import { manimRoutes } from './routes/manim';
 import { llmService } from './services/llmProvider';
 
 console.log('🚀 Starting Math Video Generator API...');
@@ -24,6 +25,7 @@ app.use(swagger({
     },
     tags: [
       { name: 'Script Generation', description: 'Manim script generation endpoints' },
+      { name: 'Manim Generation', description: 'Dedicated optimized Manim script generation' },
       { name: 'Testing', description: 'Test endpoints for LLM integration' },
       { name: 'Script Management', description: 'Manage generated scripts' },
       { name: 'Vector Search', description: 'Vector database operations' }
@@ -34,6 +36,7 @@ app.use(swagger({
 // Register routes
 videoRoutes(app);
 testRoutes(app);
+manimRoutes(app);
 
 // Health check endpoints
 app.get('/', () => ({
@@ -48,7 +51,11 @@ app.get('/', () => ({
     samplePrompts: '/api/sample-prompts',
     testLLM: '/api/test-llm',
     providerInfo: '/api/provider-info',
-    testEndpoints: '/test/*'
+    testEndpoints: '/test/*',
+    manimGenerate: '/api/manim/generate',
+    manimEnhanced: '/api/manim/generate-enhanced',
+    manimAnalyze: '/api/manim/analyze',
+    manimTips: '/api/manim/tips'
   }
 }));
 
