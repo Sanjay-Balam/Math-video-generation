@@ -20,6 +20,7 @@ from app.core.exceptions import (
     TimeoutError
 )
 from app.models.schemas import QualityLevel, VideoFormat
+from app.services.latex_template import UnicodeLatexTemplate
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +31,25 @@ class ManimCompiler:
     
     def __init__(self):
         self.ensure_directories()
+        self.latex_template = UnicodeLatexTemplate()
+        self.latex_template.setup_manim_latex_config()
     
     def ensure_directories(self) -> None:
         """Ensure required directories exist"""
         for directory in [settings.SCRIPTS_INPUT_DIR, settings.VIDEOS_OUTPUT_DIR, settings.TEMP_DIR]:
             Path(directory).mkdir(parents=True, exist_ok=True)
+        
+        # Also ensure media directory exists in temp
+        media_dir = Path(settings.TEMP_DIR) / "media"
+        media_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Create videos subdirectory
+        videos_dir = media_dir / "videos"
+        videos_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Create tex subdirectory
+        tex_dir = media_dir / "Tex"
+        tex_dir.mkdir(parents=True, exist_ok=True)
     
     async def compile_script(
         self, 
@@ -68,6 +83,10 @@ class ManimCompiler:
             # Validate script
             await self._validate_script(script_file)
             
+            # Extract scene class names for directory creation
+            scene_classes = self._extract_scene_class_names(script_content)
+            logger.info(f"Extracted scene classes: {scene_classes}")
+            
             # Compile script
             output_file = await self._compile_manim_script(
                 script_file, 
@@ -75,7 +94,8 @@ class ManimCompiler:
                 quality, 
                 format, 
                 frame_rate, 
-                custom_args
+                custom_args,
+                scene_classes
             )
             
             # Clean up temp script file
@@ -108,8 +128,14 @@ class ManimCompiler:
         
         try:
             await self._validate_script(script_file)
+            
+            # Read script content to extract scene classes
+            script_content = script_file.read_text(encoding='utf-8')
+            scene_classes = self._extract_scene_class_names(script_content)
+            logger.info(f"Extracted scene classes from file: {scene_classes}")
+            
             output_file = await self._compile_manim_script(
-                script_file, job_id, quality, format, frame_rate
+                script_file, job_id, quality, format, frame_rate, None, scene_classes
             )
             
             logger.info(f"Successfully compiled script file {script_path} with job_id {job_id}")
@@ -125,6 +151,21 @@ class ManimCompiler:
             script_file.write_text(content, encoding='utf-8')
         except Exception as e:
             raise InvalidScriptError(f"Failed to write script file: {str(e)}")
+    
+    def _extract_scene_class_names(self, script_content: str) -> list:
+        """Extract scene class names from the script content"""
+        import re
+        
+        # Look for class definitions that inherit from Scene
+        pattern = r'class\s+(\w+)\s*\([^)]*Scene[^)]*\):'
+        matches = re.findall(pattern, script_content)
+        
+        # Also look for simpler patterns like "class ClassName(Scene):"
+        simple_pattern = r'class\s+(\w+)\s*\(\s*Scene\s*\):'
+        simple_matches = re.findall(simple_pattern, script_content)
+        
+        all_matches = matches + simple_matches
+        return list(set(all_matches))  # Remove duplicates
     
     async def _validate_script(self, script_file: Path) -> None:
         """Validate Manim script syntax"""
@@ -156,24 +197,73 @@ class ManimCompiler:
         quality: QualityLevel,
         format: VideoFormat,
         frame_rate: int,
-        custom_args: Optional[Dict[str, Any]] = None
+        custom_args: Optional[Dict[str, Any]] = None,
+        scene_classes: Optional[list] = None
     ) -> str:
         """Compile Manim script using subprocess"""
         
-        # Build manim command - use just filename since we'll run from temp dir
+        # Build manim command - use full path
         cmd = self._build_manim_command(
-            Path(script_file.name), quality, format, frame_rate, custom_args
+            script_file, quality, format, frame_rate, custom_args
         )
         
         logger.info(f"Executing command: {' '.join(cmd)}")
         
         try:
-            # Run manim command with timeout from temp directory
+            # Ensure all necessary directories exist before compilation
+            self.ensure_directories()
+            
+            # Pre-create expected directory structure for this specific script
+            script_name = script_file.stem
+            quality_dirs = ["720p30", "1080p60", "480p15"]  # Common quality settings
+            
+            # Create base media directories
+            base_dirs = [
+                Path(settings.TEMP_DIR) / "media" / "videos" / script_name,
+                Path(settings.TEMP_DIR) / "media" / "images" / script_name,
+                Path(settings.TEMP_DIR) / "media" / "texts",
+                Path(settings.TEMP_DIR) / "media" / "Tex"
+            ]
+            
+            # Create quality-specific directories
+            for quality in quality_dirs:
+                quality_dirs_to_create = [
+                    Path(settings.TEMP_DIR) / "media" / "videos" / script_name / quality,
+                    Path(settings.TEMP_DIR) / "media" / "videos" / script_name / quality / "partial_movie_files",
+                ]
+                
+                # Create scene class specific directories within partial_movie_files
+                if scene_classes:
+                    for scene_class in scene_classes:
+                        scene_dir = Path(settings.TEMP_DIR) / "media" / "videos" / script_name / quality / "partial_movie_files" / scene_class
+                        quality_dirs_to_create.append(scene_dir)
+                else:
+                    # Fallback: create directories for common scene class names
+                    common_scene_names = [
+                        "SineWaveVisualization", "ComplexWaveFunction", "WaveAnimation", 
+                        "MathAnimation", "Scene", "MainScene", "MyScene", "Animation"
+                    ]
+                    for scene_name in common_scene_names:
+                        scene_dir = Path(settings.TEMP_DIR) / "media" / "videos" / script_name / quality / "partial_movie_files" / scene_name
+                        quality_dirs_to_create.append(scene_dir)
+                
+                base_dirs.extend(quality_dirs_to_create)
+            
+            for dir_path in base_dirs:
+                dir_path.mkdir(parents=True, exist_ok=True)
+                logger.debug(f"Created directory: {dir_path}")
+            
+            # Set environment variables for Unicode support
+            env = os.environ.copy()
+            env['PYTHONIOENCODING'] = 'utf-8'
+            env['PYTHONUTF8'] = '1'
+            
+            # Run manim command with timeout
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-                cwd=settings.TEMP_DIR
+                env=env
             )
             
             try:
@@ -186,7 +276,18 @@ class ManimCompiler:
                 raise TimeoutError(f"Compilation timed out after {settings.COMPILATION_TIMEOUT} seconds")
             
             if process.returncode != 0:
-                error_msg = stderr.decode('utf-8') if stderr else "Unknown compilation error"
+                # Handle stderr decoding with fallback for Unicode errors
+                try:
+                    error_msg = stderr.decode('utf-8') if stderr else "Unknown compilation error"
+                except UnicodeDecodeError:
+                    # Fallback to latin-1 or ignore errors
+                    try:
+                        error_msg = stderr.decode('latin-1') if stderr else "Unknown compilation error"
+                    except UnicodeDecodeError:
+                        error_msg = stderr.decode('utf-8', errors='ignore') if stderr else "Unknown compilation error"
+                
+                # Clean up error message to remove Unicode characters that might cause issues
+                error_msg = error_msg.replace('\u03a8', 'Psi').replace('\u03c9', 'omega').replace('\u211c', 'Re').replace('\u2111', 'Im')
                 raise CompilationError(f"Manim compilation failed: {error_msg}")
             
             # Find and move the generated video
@@ -227,6 +328,10 @@ class ManimCompiler:
         if frame_rate != 30:
             cmd.extend(["--frame_rate", str(frame_rate)])
         
+        # Set media directory to be inside TEMP_DIR to avoid path issues
+        media_dir = Path(settings.TEMP_DIR) / "media"
+        cmd.extend(["--media_dir", str(media_dir)])
+        
         # Custom arguments
         if custom_args:
             for key, value in custom_args.items():
@@ -253,31 +358,56 @@ class ManimCompiler:
         media_dir = Path(settings.TEMP_DIR) / "media" / "videos" / script_name
         
         if not media_dir.exists():
-            raise CompilationError("No output directory found after compilation")
-        
-        # Find video files
-        video_files = []
-        for quality_dir in media_dir.iterdir():
-            if quality_dir.is_dir():
-                for file in quality_dir.glob(f"*.{format.value}"):
+            # Try to find any video files in the broader media directory
+            broader_media_dir = Path(settings.TEMP_DIR) / "media"
+            logger.warning(f"Expected media directory {media_dir} not found, searching in {broader_media_dir}")
+            
+            video_files = []
+            if broader_media_dir.exists():
+                for file in broader_media_dir.rglob(f"*.{format.value}"):
                     video_files.append(file)
+            
+            if not video_files:
+                raise CompilationError(f"No output directory found after compilation. Expected: {media_dir}")
+        else:
+            # Find video files in the expected location
+            video_files = []
+            for quality_dir in media_dir.iterdir():
+                if quality_dir.is_dir():
+                    for file in quality_dir.glob(f"*.{format.value}"):
+                        video_files.append(file)
         
         if not video_files:
-            raise CompilationError(f"No {format.value} files found in output")
+            # Last resort: search entire temp directory
+            temp_dir = Path(settings.TEMP_DIR)
+            logger.warning(f"No {format.value} files found in expected locations, searching entire temp directory")
+            video_files = list(temp_dir.rglob(f"*.{format.value}"))
+        
+        if not video_files:
+            raise CompilationError(f"No {format.value} files found in output. Searched: {media_dir}")
         
         # Take the first (or most recent) video file
         source_file = video_files[0]
+        logger.info(f"Found video file: {source_file}")
         
         # Create output filename
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_filename = f"{script_name}_{job_id}_{timestamp}.{format.value}"
         output_path = Path(settings.VIDEOS_OUTPUT_DIR) / output_filename
         
+        # Ensure output directory exists
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
         # Move file to output directory
         shutil.move(str(source_file), str(output_path))
+        logger.info(f"Moved video file to: {output_path}")
         
-        # Clean up media directory
-        shutil.rmtree(media_dir.parent.parent, ignore_errors=True)
+        # Clean up media directory (but be careful about errors)
+        try:
+            if media_dir.exists():
+                shutil.rmtree(media_dir.parent.parent, ignore_errors=True)
+        except Exception as e:
+            logger.warning(f"Failed to clean up media directory: {e}")
         
         return str(output_path)
     

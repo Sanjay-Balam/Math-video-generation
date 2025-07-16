@@ -50,6 +50,45 @@ CRITICAL LATEX RULES:
 - For superscripts: use ^{superscript}
 - NEVER leave incomplete LaTeX like \\frac{-b without closing braces
 - Always balance your braces { and }
+- NEVER use Unicode characters directly in LaTeX - use LaTeX commands instead:
+  - Use \\Psi instead of Ψ (Greek Psi)
+  - Use \\omega instead of ω (Greek omega)
+  - Use \\alpha instead of α (Greek alpha)
+  - Use \\beta instead of β (Greek beta)
+  - Use \\gamma instead of γ (Greek gamma)
+  - Use \\delta instead of δ (Greek delta)
+  - Use \\theta instead of θ (Greek theta)
+  - Use \\lambda instead of λ (Greek lambda)
+  - Use \\mu instead of μ (Greek mu)
+  - Use \\nu instead of ν (Greek nu)
+  - Use \\pi instead of π (Greek pi)
+  - Use \\rho instead of ρ (Greek rho)
+  - Use \\sigma instead of σ (Greek sigma)
+  - Use \\tau instead of τ (Greek tau)
+  - Use \\phi instead of φ (Greek phi)
+  - Use \\chi instead of χ (Greek chi)
+  - Use \\infty instead of ∞ (infinity)
+  - Use \\pm instead of ± (plus-minus)
+  - Use \\times instead of × (multiplication)
+  - Use \\div instead of ÷ (division)
+  - Use \\leq instead of ≤ (less than or equal)
+  - Use \\geq instead of ≥ (greater than or equal)
+  - Use \\neq instead of ≠ (not equal)
+  - Use \\approx instead of ≈ (approximately equal)
+  - Use \\subset instead of ⊂ (subset)
+  - Use \\supset instead of ⊃ (superset)
+  - Use \\in instead of ∈ (element of)
+  - Use \\notin instead of ∉ (not element of)
+  - Use \\cap instead of ∩ (intersection)
+  - Use \\cup instead of ∪ (union)
+  - Use \\int instead of ∫ (integral)
+  - Use \\sum instead of ∑ (summation)
+  - Use \\prod instead of ∏ (product)
+  - Use \\partial instead of ∂ (partial derivative)
+  - Use \\nabla instead of ∇ (gradient)
+  - Use \\hbar instead of ℏ (reduced Planck constant)
+  - Use \\Re instead of ℜ (real part)
+  - Use \\Im instead of ℑ (imaginary part)
 
 CRITICAL PYTHON/MANIM RULES:
 - When creating lists of MathTex objects, access them with [0], [1], [2], etc.
@@ -222,6 +261,7 @@ Now generate a Manim script for the following prompt. Return ONLY the Python cod
     script = fixManimSyntaxErrors(script);
     script = fixAnimationErrors(script);
     script = fixSyntaxErrors(script);
+    script = fixUnicodeCharacters(script);
 
     return script;
   } catch (error) {
@@ -477,6 +517,181 @@ function fixSyntaxErrors(script: string): string {
   fixedScript = fixedScript.replace(
     /while\s+([^=]+)\s*=\s*([^=\n]+):/g,
     'while $1 == $2:'
+  );
+  
+  return fixedScript;
+}
+
+// Function to fix Unicode characters in LaTeX expressions
+function fixUnicodeCharacters(script: string): string {
+  let fixedScript = script;
+  
+  // Define Unicode to LaTeX mappings
+  const unicodeToLatex: { [key: string]: string } = {
+    // Greek letters (lowercase)
+    'α': '\\alpha',
+    'β': '\\beta',
+    'γ': '\\gamma',
+    'δ': '\\delta',
+    'ε': '\\varepsilon',
+    'ζ': '\\zeta',
+    'η': '\\eta',
+    'θ': '\\theta',
+    'ι': '\\iota',
+    'κ': '\\kappa',
+    'λ': '\\lambda',
+    'μ': '\\mu',
+    'ν': '\\nu',
+    'ξ': '\\xi',
+    'ο': 'o',
+    'π': '\\pi',
+    'ρ': '\\rho',
+    'σ': '\\sigma',
+    'τ': '\\tau',
+    'υ': '\\upsilon',
+    'φ': '\\phi',
+    'χ': '\\chi',
+    'ψ': '\\psi',
+    'ω': '\\omega',
+    
+    // Greek letters (uppercase)
+    'Α': 'A',
+    'Β': 'B',
+    'Γ': '\\Gamma',
+    'Δ': '\\Delta',
+    'Ε': 'E',
+    'Ζ': 'Z',
+    'Η': 'H',
+    'Θ': '\\Theta',
+    'Ι': 'I',
+    'Κ': 'K',
+    'Λ': '\\Lambda',
+    'Μ': 'M',
+    'Ν': 'N',
+    'Ξ': '\\Xi',
+    'Ο': 'O',
+    'Π': '\\Pi',
+    'Ρ': 'P',
+    'Σ': '\\Sigma',
+    'Τ': 'T',
+    'Υ': '\\Upsilon',
+    'Φ': '\\Phi',
+    'Χ': 'X',
+    'Ψ': '\\Psi',
+    'Ω': '\\Omega',
+    
+    // Mathematical symbols
+    '∞': '\\infty',
+    '±': '\\pm',
+    '∓': '\\mp',
+    '×': '\\times',
+    '÷': '\\div',
+    '≤': '\\leq',
+    '≥': '\\geq',
+    '≠': '\\neq',
+    '≈': '\\approx',
+    '≡': '\\equiv',
+    '∝': '\\propto',
+    '∂': '\\partial',
+    '∇': '\\nabla',
+    '∆': '\\Delta',
+    '∑': '\\sum',
+    '∏': '\\prod',
+    '∫': '\\int',
+    '∮': '\\oint',
+    '√': '\\sqrt',
+    '∈': '\\in',
+    '∉': '\\notin',
+    '∋': '\\ni',
+    '∌': '\\not\\ni',
+    '⊂': '\\subset',
+    '⊃': '\\supset',
+    '⊆': '\\subseteq',
+    '⊇': '\\supseteq',
+    '∩': '\\cap',
+    '∪': '\\cup',
+    '∧': '\\wedge',
+    '∨': '\\vee',
+    '¬': '\\neg',
+    '→': '\\to',
+    '←': '\\leftarrow',
+    '↔': '\\leftrightarrow',
+    '⇒': '\\Rightarrow',
+    '⇐': '\\Leftarrow',
+    '⇔': '\\Leftrightarrow',
+    '∀': '\\forall',
+    '∃': '\\exists',
+    '∄': '\\nexists',
+    '∅': '\\emptyset',
+    '∆': '\\triangle',
+    '∠': '\\angle',
+    '⊥': '\\perp',
+    '∥': '\\parallel',
+    '∦': '\\nparallel',
+    '℘': '\\wp',
+    'ℜ': '\\Re',
+    'ℑ': '\\Im',
+    'ℏ': '\\hbar',
+    'ℓ': '\\ell',
+    '…': '\\ldots',
+    '⋮': '\\vdots',
+    '⋯': '\\cdots',
+    '⋱': '\\ddots',
+    '°': '^\\circ',
+    '′': "'",
+    '″': "''",
+    '‴': "'''",
+    '⁰': '^0',
+    '¹': '^1',
+    '²': '^2',
+    '³': '^3',
+    '⁴': '^4',
+    '⁵': '^5',
+    '⁶': '^6',
+    '⁷': '^7',
+    '⁸': '^8',
+    '⁹': '^9',
+    '₀': '_0',
+    '₁': '_1',
+    '₂': '_2',
+    '₃': '_3',
+    '₄': '_4',
+    '₅': '_5',
+    '₆': '_6',
+    '₇': '_7',
+    '₈': '_8',
+    '₉': '_9'
+  };
+  
+  // Replace Unicode characters within MathTex and axis labels
+  fixedScript = fixedScript.replace(
+    /(MathTex\(r?"[^"]*"|Text\([^)]*"|x_label\s*=\s*"[^"]*"|y_label\s*=\s*"[^"]*")/g,
+    (match) => {
+      let fixed = match;
+      
+      // Replace each Unicode character with its LaTeX equivalent
+      Object.entries(unicodeToLatex).forEach(([unicode, latex]) => {
+        // Use global replace to handle multiple occurrences
+        fixed = fixed.replace(new RegExp(unicode, 'g'), latex);
+      });
+      
+      return fixed;
+    }
+  );
+  
+  // Also fix direct string occurrences that might be in axis labels
+  fixedScript = fixedScript.replace(
+    /(".*?")/g,
+    (match) => {
+      let fixed = match;
+      
+      // Replace each Unicode character with its LaTeX equivalent
+      Object.entries(unicodeToLatex).forEach(([unicode, latex]) => {
+        fixed = fixed.replace(new RegExp(unicode, 'g'), latex);
+      });
+      
+      return fixed;
+    }
   );
   
   return fixedScript;

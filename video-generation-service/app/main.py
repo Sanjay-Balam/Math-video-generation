@@ -3,6 +3,8 @@ Main FastAPI application entry point
 """
 
 import logging
+import os
+import sys
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +15,10 @@ from app.core.logging import setup_logging
 from app.api.v1.router import api_router
 from app.core.exceptions import setup_exception_handlers
 from app.services.health import HealthService
+
+# Set up Unicode support environment variables
+os.environ['PYTHONIOENCODING'] = 'utf-8'
+os.environ['PYTHONUTF8'] = '1'
 
 # Setup logging
 setup_logging()
