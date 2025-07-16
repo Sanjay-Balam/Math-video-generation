@@ -442,30 +442,44 @@ function fixManimSyntaxErrors(script: string): string {
 function fixAnimationErrors(script: string): string {
   let fixedScript = script;
   
-  // Fix cases where self.time is used without being defined as ValueTracker
-  if (fixedScript.includes('self.time') && !fixedScript.includes('ValueTracker')) {
-    // Check if we need to add ValueTracker import
-    if (!fixedScript.includes('ValueTracker')) {
-      fixedScript = fixedScript.replace(
-        /from manim import \*/,
-        'from manim import *'
-      );
-    }
+  // Check if self.time is used in the script
+  if (fixedScript.includes('self.time')) {
+    // Find the construct method and check if ValueTracker is initialized early enough
+    const constructMatch = fixedScript.match(/(def construct\(self\):\s*)([\s\S]*?)(?=\n\s{0,4}def|\n\s{0,4}class|$)/);
     
-    // Look for the construct method and add ValueTracker initialization
-    const constructMatch = fixedScript.match(/(def construct\(self\):\s*)/);
     if (constructMatch) {
-      // Insert ValueTracker initialization right after construct method definition
-      fixedScript = fixedScript.replace(
-        constructMatch[0],
-        constructMatch[0] + '\n        # Initialize time tracker for animations\n        self.time = ValueTracker(0)\n'
-      );
+      const constructMethod = constructMatch[2];
+      const usagePattern = /self\.time\.get_value\(\)/;
+      const initPattern = /self\.time\s*=\s*ValueTracker\(/;
+      
+      // Check if self.time is used before being initialized
+      const usageMatch = constructMethod.search(usagePattern);
+      const initMatch = constructMethod.search(initPattern);
+      
+      if (usageMatch !== -1 && (initMatch === -1 || usageMatch < initMatch)) {
+        // Remove existing ValueTracker initialization if it exists
+        if (initMatch !== -1) {
+          fixedScript = fixedScript.replace(/\s*self\.time\s*=\s*ValueTracker\([^)]*\)[^\n]*\n?/g, '');
+        }
+        
+        // Add ValueTracker initialization right after construct method definition
+        fixedScript = fixedScript.replace(
+          /(def construct\(self\):\s*)/,
+          '$1\n        # Initialize time tracker for animations\n        self.time = ValueTracker(0)\n'
+        );
+      } else if (!fixedScript.includes('self.time = ValueTracker')) {
+        // Add ValueTracker initialization if it doesn't exist at all
+        fixedScript = fixedScript.replace(
+          /(def construct\(self\):\s*)/,
+          '$1\n        # Initialize time tracker for animations\n        self.time = ValueTracker(0)\n'
+        );
+      }
     }
   }
   
   // Fix cases where always_redraw uses self.time directly instead of self.time.get_value()
   fixedScript = fixedScript.replace(
-    /self\.time(?!\.get_value\(\))/g,
+    /self\.time(?!\.get_value\(\)|\.animate|\.set_value|\s*=)/g,
     'self.time.get_value()'
   );
   
@@ -495,12 +509,46 @@ function fixSyntaxErrors(script: string): string {
     '$1.set_value($2)'
   );
   
+  // Fix specific ValueTracker syntax errors
+  // Pattern: self.time.ValueTracker(0) = get_value() -> self.time = ValueTracker(0)
+  fixedScript = fixedScript.replace(
+    /self\.time\.ValueTracker\(([^)]+)\)\s*=\s*get_value\(\)/g,
+    'self.time = ValueTracker($1)'
+  );
+  
+  // Fix more general ValueTracker assignment errors
+  fixedScript = fixedScript.replace(
+    /(\w+)\.ValueTracker\(([^)]+)\)\s*=\s*(\w+\(\))/g,
+    '$1 = ValueTracker($2)'
+  );
+  
+  // Fix self.time being referenced without initialization
+  if (fixedScript.includes('self.time.get_value()') && !fixedScript.includes('self.time = ValueTracker')) {
+    // Add initialization after construct method definition
+    fixedScript = fixedScript.replace(
+      /(def construct\(self\):\s*)/,
+      '$1\n        # Initialize time tracker\n        self.time = ValueTracker(0)\n'
+    );
+  }
+  
+  // Fix .get_value().animate patterns -> should be just .animate
+  fixedScript = fixedScript.replace(
+    /(\w+)\.get_value\(\)\.animate\./g,
+    '$1.animate.'
+  );
+  
+  // Fix self.time.get_value().animate -> self.time.animate
+  fixedScript = fixedScript.replace(
+    /self\.time\.get_value\(\)\.animate\./g,
+    'self.time.animate.'
+  );
+  
   // Fix cases where method calls are used in assignment positions
   fixedScript = fixedScript.replace(
     /(\w+\.\w+\([^)]*\))\s*=\s*([^=\n]+)/g,
     (match, methodCall, value) => {
       // Only fix if it looks like a method call that shouldn't be assigned to
-      if (methodCall.includes('.animate.') || methodCall.includes('.get_')) {
+      if (methodCall.includes('.animate.') || methodCall.includes('.get_') || methodCall.includes('.ValueTracker')) {
         return `# Fixed invalid assignment: ${match}`;
       }
       return match;

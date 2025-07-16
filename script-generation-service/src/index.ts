@@ -1,3 +1,4 @@
+import { config } from 'dotenv';
 import { Elysia } from 'elysia';
 import { swagger } from '@elysiajs/swagger';
 import { cors } from '@elysiajs/cors';
@@ -5,6 +6,9 @@ import { videoRoutes } from './routes/video';
 import { testRoutes } from './routes/test';
 import { manimRoutes } from './routes/manim';
 import { llmService } from './services/llmProvider';
+
+// Load environment variables
+config();
 
 console.log('🚀 Starting Math Video Generator API...');
 console.log(`📌 Using LLM Provider: ${process.env.LLM_PROVIDER || 'openrouter'}`);
